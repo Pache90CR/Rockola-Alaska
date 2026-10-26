@@ -102,7 +102,7 @@
 
     <header>
         <div class="brand">❄️ BAR RESTAURANTE ALASKA — ROCKOLA</div>
-        <div class="status-badge" id="connection-status">● Conectando...</div>
+        <div class="status-badge" id="connection-status">● Activo</div>
     </header>
 
     <div class="main-layout">
@@ -115,13 +115,12 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- API nativa de YouTube -->
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <script>
-        const supabaseUrl = 'https://zothgtvmkuranngxmumc.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const SUPABASE_URL = 'https://zothgtvmkuranngxmumc.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ';
 
         let player = null;
         let isPlayerReady = false;
@@ -129,6 +128,7 @@
         let currentSongId = null;
         let queueData = [];
 
+        // 1. Inicializar Reproductor de YouTube
         window.onYouTubeIframeAPIReady = () => {
             player = new YT.Player('player', {
                 playerVars: { 'autoplay': 1, 'controls': 1 },
@@ -144,67 +144,45 @@
             });
         };
 
-        async function init() {
-            await fetchQueue();
-            subscribeRealtime();
-        }
-
+        // 2. Consulta directa a la base de datos vía REST
         async function fetchQueue() {
+            const endpoint = `${SUPABASE_URL}/rest/v1/cola_reproduccion?select=*&order=created_at.asc`;
+            
             try {
-                const { data, error } = await supabase
-                    .from('cola_reproduccion')
-                    .select('*')
-                    .order('created_at', { ascending: true });
+                const response = await fetch(endpoint, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': 'Bearer ' + SUPABASE_KEY
+                    }
+                });
 
-                if (error) {
-                    document.getElementById('queue-list').innerHTML = '<p style="color:#ff6b6b;">Error: ' + error.message + '</p>';
-                    return;
+                if (!response.ok) {
+                    throw new Error('Error al conectar con la base de datos');
                 }
 
+                const data = await response.json();
                 queueData = data || [];
                 renderQueue();
-                if (isPlayerReady && !isPlaying) {
+
+                // Si el reproductor está listo y no hay nada sonando, reproducir la primera
+                if (isPlayerReady && !isPlaying && queueData.length > 0) {
                     playNext();
                 }
             } catch (err) {
-                document.getElementById('queue-list').innerHTML = '<p style="color:#ff6b6b;">Error de red: ' + err.message + '</p>';
+                document.getElementById('queue-list').innerHTML = '<p style="color:#ff6b6b;">Error: ' + err.message + '</p>';
             }
         }
 
-        function subscribeRealtime() {
-            supabase.channel('custom-all-channel')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'cola_reproduccion' }, (payload) => {
-                    if (payload.eventType === 'INSERT') {
-                        if (!queueData.some(s => s.id === payload.new.id)) {
-                            queueData.push(payload.new);
-                        }
-                    } else if (payload.eventType === 'DELETE') {
-                        queueData = queueData.filter(song => song.id !== payload.old.id);
-                    }
-                    renderQueue();
-                    if (isPlayerReady && !isPlaying) {
-                        playNext();
-                    }
-                }).subscribe((status) => {
-                    const badge = document.getElementById('connection-status');
-                    if (status === 'SUBSCRIBED') {
-                        badge.style.backgroundColor = '#45a29e';
-                        badge.textContent = '● En línea (Tiempo Real)';
-                    } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-                        badge.style.backgroundColor = '#ff6b6b';
-                        badge.textContent = '● Desconectado';
-                    }
-                });
-        }
-
+        // 3. Dibujar la lista de canciones en pantalla
         function renderQueue() {
             const queueListDiv = document.getElementById('queue-list');
             queueListDiv.innerHTML = '';
+
             if (queueData.length === 0) {
                 queueListDiv.innerHTML = '<p style="color:#c5c6c7;">Sin canciones en fila. Agrega desde el celular.</p>';
                 return;
             }
-            
+
             queueData.forEach((song, idx) => {
                 const item = document.createElement('div');
                 const isCurrent = song.id === currentSongId;
@@ -217,9 +195,10 @@
             });
         }
 
+        // 4. Pasar a la siguiente canción cuando termine el video actual
         async function onPlayerStateChange(event) {
             if (event.data === YT.PlayerState.ENDED && currentSongId) {
-                await supabase.from('cola_reproduccion').delete().eq('id', currentSongId);
+                await deleteSongFromDatabase(currentSongId);
                 queueData = queueData.filter(song => song.id !== currentSongId);
                 currentSongId = null;
                 isPlaying = false;
@@ -228,17 +207,36 @@
             }
         }
 
+        // 5. Eliminar canción de Supabase al finalizar
+        async function deleteSongFromDatabase(songId) {
+            const endpoint = `${SUPABASE_URL}/rest/v1/cola_reproduccion?id=eq.${songId}`;
+            try {
+                await fetch(endpoint, {
+                    method: 'DELETE',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': 'Bearer ' + SUPABASE_KEY
+                    }
+                });
+            } catch (err) {
+                console.error("Error borrando canción:", err);
+            }
+        }
+
+        // 6. Cargar video en el reproductor
         function playNext() {
             if (isPlayerReady && !isPlaying && queueData.length > 0) {
                 const nextSong = queueData[0];
                 currentSongId = nextSong.id;
                 isPlaying = true;
-                renderQueue(); 
+                renderQueue();
                 player.loadVideoById(nextSong.video_id);
             }
         }
 
-        init();
+        // Iniciar consulta de inmediato y actualizar cada 3 segundos
+        fetchQueue();
+        setInterval(fetchQueue, 3000);
     </script>
 </body>
 </html>
