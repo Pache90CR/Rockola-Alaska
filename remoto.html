@@ -10,19 +10,16 @@
         .header { text-align: center; margin-bottom: 12px; border-bottom: 1px solid #1f2833; padding-bottom: 8px; }
         .header h1 { color: #66fcf1; font-size: 1.2rem; margin: 0; }
         
-        /* Buscador */
         .search-box { display: flex; gap: 8px; margin-bottom: 12px; }
         input[type="text"] { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #45a29e; background-color: #1f2833; color: white; font-size: 0.95rem; outline: none; }
         button.btn-search { padding: 12px 16px; border-radius: 10px; border: none; background-color: #66fcf1; color: #0b0c10; font-weight: bold; font-size: 0.95rem; cursor: pointer; }
 
-        /* Categorías / Chips estilo YouTube */
         .chips-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 10px; scrollbar-width: none; }
         .chip { background: #1f2833; color: #c5c6c7; padding: 7px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: bold; white-space: nowrap; border: 1px solid #2c3846; cursor: pointer; }
         .chip.active { background: #66fcf1; color: #0b0c10; border-color: #66fcf1; }
 
         #status-msg { margin-bottom: 12px; text-align: center; font-size: 0.85rem; }
         
-        /* Cuadrícula de Tarjetas */
         #results { display: flex; flex-direction: column; gap: 10px; }
         .card { background-color: #1f2833; border-radius: 10px; padding: 10px; display: flex; gap: 10px; align-items: center; border: 1px solid #2c3846; }
         .thumb { width: 90px; height: 65px; object-fit: cover; border-radius: 6px; }
@@ -44,13 +41,12 @@
         <button type="submit" class="btn-search">Buscar</button>
     </form>
 
-    <!-- Chips de Géneros y Playlists estilo YouTube -->
     <div class="chips-container">
-        <div class="chip active" onclick="filterGenre('todos', this)">🌐 Inicio</div>
-        <div class="chip" onclick="filterGenre('regional', this)">🌵 Regional Mex</div>
-        <div class="chip" onclick="filterGenre('dembow', this)">🔥 Dembow/Urbano</div>
-        <div class="chip" onclick="filterGenre('toledo', this)">🦁 Toledo/Dancehall</div>
-        <div class="chip" onclick="filterGenre('salsa', this)">💃 Salsa/Bachata</div>
+        <div class="chip active" onclick="filterGenre('Música variada para bares 2026 éxitos', this)">🌐 Inicio</div>
+        <div class="chip" onclick="filterGenre('Mix regional mexicano, banda y corridos', this)">🌵 Regional Mex</div>
+        <div class="chip" onclick="filterGenre('Mix dembow, reggaeton, fiesta urbana', this)">🔥 Dembow/Urbano</div>
+        <div class="chip" onclick="filterGenre('Toledo dancehall Costa Rica', this)">🦁 Toledo/Dancehall</div>
+        <div class="chip" onclick="filterGenre('Mix salsa y bachata bailable', this)">💃 Salsa/Bachata</div>
         <div class="chip" onclick="showFavorites(this)">⭐ Mis Favoritos</div>
     </div>
 
@@ -62,32 +58,12 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ';
         const YOUTUBE_API_KEY = "AIzaSyAHKvpCidYJTCFasu0XsQYvCSUwHsWA4mI";
 
-        // Mapeo de canciones rápidas por género del Bar
-        const PRESET_MUSIC = {
-            regional: [
-                { id: "Ya2eGqC_T7w", title: "Grupo Firme - Ya Supérame (Video Oficial)", thumb: "https://i.ytimg.com/vi/Ya2eGqC_T7w/hqdefault.jpg" },
-                { id: "x-X9X4pUaCg", title: "Christian Nodal - Ya No Somos Ni Seremos", thumb: "https://i.ytimg.com/vi/x-X9X4pUaCg/hqdefault.jpg" },
-                { id: "6w472wQ6uK8", title: "Calibre 50 - Si Te Pudiera Mentir", thumb: "https://i.ytimg.com/vi/6w472wQ6uK8/hqdefault.jpg" }
-            ],
-            dembow: [
-                { id: "DJ_Alejandrop", title: "DEMBOW 2026 🔥 El Alfa, Bulin 47, Tokischa MIX", thumb: "https://i.ytimg.com/vi/5qap5aO4i9A/hqdefault.jpg" },
-                { id: "dembow_mix2", title: "El Alfa x Rochy RD - Lo Más Sonado Reggaeton", thumb: "https://i.ytimg.com/vi/3y_8N44UjJ0/hqdefault.jpg" }
-            ],
-            toledo: [
-                { id: "TOLEDO_SHOWTIME", title: "TOLEDO - SHOWTIME (Video Oficial)", thumb: "https://i.ytimg.com/vi/9bZkp7q19f0/hqdefault.jpg" },
-                { id: "toledo_mix", title: "Toledo - El Lirical Exitos Dancehall Costa Rica", thumb: "https://i.ytimg.com/vi/L3wKzy_U9f0/hqdefault.jpg" }
-            ],
-            salsa: [
-                { id: "bachata_mix", title: "Aventura & Romeo Santos - Mix Grandes Éxitos", thumb: "https://i.ytimg.com/vi/8U_N1W99S6k/hqdefault.jpg" },
-                { id: "salsa_mix", title: "Marc Anthony - Salsa Clásica Pa' Bailar", thumb: "https://i.ytimg.com/vi/ZXD3N4P19zY/hqdefault.jpg" }
-            ]
-        };
-
         document.getElementById('searchForm').addEventListener('submit', function(e) {
             e.preventDefault();
             searchYouTube();
         });
 
+        // Búsqueda dinámica real hacia YouTube (trae hasta 15 resultados variados)
         async function searchYouTube(customQuery = null) {
             const query = customQuery || document.getElementById('searchInput').value.trim();
             const statusDiv = document.getElementById('status-msg');
@@ -96,10 +72,10 @@
             if (!query) return;
 
             statusDiv.style.color = '#66fcf1';
-            statusDiv.innerHTML = '🔍 Buscando en YouTube...';
+            statusDiv.innerHTML = '🔍 Buscando música...';
             resultsDiv.innerHTML = '';
 
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(query)}&type=video&key=${YOUTUBE_API_KEY}`;
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(query)}&type=video&key=${YOUTUBE_API_KEY}`;
 
             try {
                 const response = await fetch(url);
@@ -158,16 +134,13 @@
             });
         }
 
-        function filterGenre(genre, element) {
+        function filterGenre(query, element) {
             document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
             element.classList.add('active');
-
-            if (genre === 'todos') {
-                searchYouTube('Música para Bar Éxitos');
-            } else if (PRESET_MUSIC[genre]) {
-                document.getElementById('status-msg').innerHTML = '';
-                displayResults(PRESET_MUSIC[genre]);
-            }
+            
+            // Vaciar el texto del input al navegar por chips
+            document.getElementById('searchInput').value = ''; 
+            searchYouTube(query);
         }
 
         function saveFav(videoId, title, thumb) {
@@ -212,7 +185,6 @@
                 });
 
                 if (response.ok) {
-                    alert("¡Canción agregada a la pantalla!");
                     buttonEl.textContent = "✓ Agregada";
                 } else {
                     alert("Error guardando canción.");
@@ -226,8 +198,8 @@
             }
         }
 
-        // Cargar recomendaciones de inicio al abrir
-        filterGenre('todos', document.querySelector('.chip.active'));
+        // Cargar recomendaciones globales al iniciar la Rockola
+        filterGenre('Música variada para bares 2026 éxitos', document.querySelector('.chip.active'));
     </script>
 </body>
 </html>
