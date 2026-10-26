@@ -25,24 +25,20 @@
 </head>
 <body>
 
-    <div class="header"><h1>📱 Control de Música v4</h1></div>
+    <div class="header"><h1>📱 Control de Música v5</h1></div>
 
     <form id="searchForm" class="search-box">
         <input type="text" id="searchInput" placeholder="Escribe canción o artista..." autocomplete="off">
-        <button type="submit" id="btnSearch">Buscar</button>
+        <button type="submit">Buscar</button>
     </form>
 
     <div id="status-msg"></div>
     <div id="results"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script>
         const SUPABASE_URL = 'https://zothgtvmkurannngxmumc.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ';
         const YOUTUBE_API_KEY = "AIzaSyAHKvpCidYJTCFasu0XsQYvCSUwHsWA4mI";
-
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         document.getElementById('searchForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -111,8 +107,7 @@
                 const addBtn = document.createElement('button');
                 addBtn.className = 'btn-add';
                 addBtn.textContent = '+ Agregar';
-                
-                // Manejo directo del evento click sin interpolación de texto
+
                 addBtn.addEventListener('click', function() {
                     addToQueue(video.id.videoId, video.snippet.title, addBtn);
                 });
@@ -131,20 +126,30 @@
             buttonEl.textContent = "Guardando...";
             buttonEl.disabled = true;
 
-            try {
-                const { data, error } = await supabase
-                    .from('cola_reproduccion')
-                    .insert([{ video_id: videoId, title: title }]);
+            const endpoint = `${SUPABASE_URL}/rest/v1/cola_reproduccion`;
 
-                if (error) {
-                    alert("Error Supabase (" + error.code + "): " + error.message);
-                    buttonEl.textContent = originalText;
-                    buttonEl.disabled = false;
-                } else {
-                    alert("¡Canción agregada con éxito!");
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': 'Bearer ' + SUPABASE_KEY,
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify([{ video_id: videoId, title: title }])
+                });
+
+                if (response.ok) {
+                    alert("¡Canción agregada a la lista de la pantalla!");
                     document.getElementById('searchInput').value = '';
                     document.getElementById('results').innerHTML = '';
                     document.getElementById('status-msg').innerHTML = '';
+                } else {
+                    const errData = await response.json();
+                    alert("Error Supabase: " + (errData.message || response.statusText));
+                    buttonEl.textContent = originalText;
+                    buttonEl.disabled = false;
                 }
             } catch (err) {
                 alert("Error de conexión Supabase: " + err.message);
