@@ -25,7 +25,7 @@
 </head>
 <body>
 
-    <div class="header"><h1>📱 Control de Música v3</h1></div>
+    <div class="header"><h1>📱 Control de Música v4</h1></div>
 
     <form id="searchForm" class="search-box">
         <input type="text" id="searchInput" placeholder="Escribe canción o artista..." autocomplete="off">
@@ -35,18 +35,6 @@
     <div id="status-msg"></div>
     <div id="results"></div>
 
-    <!-- Muestra cualquier error interno directamente en pantalla -->
-    <script>
-        window.onerror = function(msg, url, line) {
-            var statusDiv = document.getElementById('status-msg');
-            if (statusDiv) {
-                statusDiv.className = 'error-box';
-                statusDiv.innerHTML = '<b>Error en código:</b> ' + msg + ' (Línea ' + line + ')';
-            }
-            return false;
-        };
-    </script>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
@@ -54,18 +42,7 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ';
         const YOUTUBE_API_KEY = "AIzaSyAHKvpCidYJTCFasu0XsQYvCSUwHsWA4mI";
 
-        let supabaseClient = null;
-
-        function getSupabase() {
-            if (!supabaseClient) {
-                if (window.supabase && window.supabase.createClient) {
-                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                } else {
-                    throw new Error("No se pudo conectar con Supabase. Revisa la conexión.");
-                }
-            }
-            return supabaseClient;
-        }
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         document.getElementById('searchForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -73,8 +50,7 @@
         });
 
         async function searchYouTube() {
-            const searchInput = document.getElementById('searchInput');
-            const query = searchInput ? searchInput.value.trim() : '';
+            const query = document.getElementById('searchInput').value.trim();
             const statusDiv = document.getElementById('status-msg');
             const resultsDiv = document.getElementById('results');
 
@@ -96,7 +72,7 @@
 
                 if (data.error) {
                     statusDiv.className = 'error-box';
-                    statusDiv.innerHTML = '<b>Error YouTube (' + data.error.code + '):</b><br>' + data.error.message;
+                    statusDiv.innerHTML = '<b>Error YouTube:</b> ' + data.error.message;
                     return;
                 }
 
@@ -104,7 +80,7 @@
                 displayResults(data.items);
             } catch (error) {
                 statusDiv.className = 'error-box';
-                statusDiv.innerHTML = '<b>Error de red:</b> ' + error.message;
+                statusDiv.innerHTML = '<b>Error de red YouTube:</b> ' + error.message;
             }
         }
 
@@ -118,28 +94,52 @@
             }
 
             videos.forEach(video => {
-                const item = document.createElement('div');
-                item.className = 'card';
-                const videoTitle = video.snippet.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const card = document.createElement('div');
+                card.className = 'card';
+
+                const img = document.createElement('img');
+                img.className = 'thumb';
+                img.src = video.snippet.thumbnails.medium.url;
+
+                const info = document.createElement('div');
+                info.className = 'card-info';
+
+                const title = document.createElement('div');
+                title.className = 'card-title';
+                title.textContent = video.snippet.title;
+
+                const addBtn = document.createElement('button');
+                addBtn.className = 'btn-add';
+                addBtn.textContent = '+ Agregar';
                 
-                item.innerHTML = `
-                    <img class="thumb" src="${video.snippet.thumbnails.medium.url}">
-                    <div class="card-info">
-                        <div class="card-title">${video.snippet.title}</div>
-                        <button class="btn-add" onclick="addToQueue('${video.id.videoId}', '${videoTitle}')">+ Agregar</button>
-                    </div>
-                `;
-                resultsDiv.appendChild(item);
+                // Manejo directo del evento click sin interpolación de texto
+                addBtn.addEventListener('click', function() {
+                    addToQueue(video.id.videoId, video.snippet.title, addBtn);
+                });
+
+                info.appendChild(title);
+                info.appendChild(addBtn);
+                card.appendChild(img);
+                card.appendChild(info);
+
+                resultsDiv.appendChild(card);
             });
         }
 
-        async function addToQueue(videoId, title) {
+        async function addToQueue(videoId, title, buttonEl) {
+            const originalText = buttonEl.textContent;
+            buttonEl.textContent = "Guardando...";
+            buttonEl.disabled = true;
+
             try {
-                const client = getSupabase();
-                const { error } = await client.from('cola_reproduccion').insert([{ video_id: videoId, title: title }]);
-                
+                const { data, error } = await supabase
+                    .from('cola_reproduccion')
+                    .insert([{ video_id: videoId, title: title }]);
+
                 if (error) {
-                    alert("Error Supabase: " + error.message);
+                    alert("Error Supabase (" + error.code + "): " + error.message);
+                    buttonEl.textContent = originalText;
+                    buttonEl.disabled = false;
                 } else {
                     alert("¡Canción agregada con éxito!");
                     document.getElementById('searchInput').value = '';
@@ -147,7 +147,9 @@
                     document.getElementById('status-msg').innerHTML = '';
                 }
             } catch (err) {
-                alert("Error: " + err.message);
+                alert("Error de conexión Supabase: " + err.message);
+                buttonEl.textContent = originalText;
+                buttonEl.disabled = false;
             }
         }
     </script>
