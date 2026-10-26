@@ -7,64 +7,99 @@
     <style>
         * { box-sizing: border-box; }
         body { margin: 0; background-color: #0b0c10; color: #ffffff; font-family: sans-serif; padding: 15px; }
-        .header { text-align: center; margin-bottom: 20px; border-bottom: 1px solid #1f2833; padding-bottom: 10px; }
+        .header { text-align: center; margin-bottom: 15px; border-bottom: 1px solid #1f2833; padding-bottom: 10px; }
         .header h1 { color: #66fcf1; font-size: 1.3rem; margin: 0; }
         .search-box { display: flex; gap: 8px; margin-bottom: 15px; }
-        input[type="text"] { flex: 1; padding: 14px; border-radius: 10px; border: 1px solid #45a29e; background-color: #1f2833; color: white; font-size: 1rem; }
-        button { padding: 14px 18px; border-radius: 10px; border: none; background-color: #66fcf1; color: #0b0c10; font-weight: bold; font-size: 1rem; }
-        #status-msg { margin-bottom: 15px; text-align: center; font-size: 0.9rem; }
-        .error-box { color: #ff6b6b; background: #2b1111; padding: 12px; border-radius: 8px; border: 1px solid #ff4444; word-break: break-word; }
+        input[type="text"] { flex: 1; padding: 14px; border-radius: 10px; border: 1px solid #45a29e; background-color: #1f2833; color: white; font-size: 1rem; outline: none; }
+        button { padding: 14px 18px; border-radius: 10px; border: none; background-color: #66fcf1; color: #0b0c10; font-weight: bold; font-size: 1rem; cursor: pointer; }
+        button:active { opacity: 0.8; }
+        #status-msg { margin-bottom: 15px; text-align: center; font-size: 0.9rem; word-break: break-word; }
+        .error-box { color: #ff6b6b; background: #2b1111; padding: 12px; border-radius: 8px; border: 1px solid #ff4444; word-break: break-word; text-align: left; }
         #results { display: flex; flex-direction: column; gap: 12px; }
         .card { background-color: #1f2833; border-radius: 10px; padding: 12px; display: flex; gap: 12px; align-items: center; border: 1px solid #2c3846; }
         .thumb { width: 100px; height: 70px; object-fit: cover; border-radius: 6px; }
         .card-info { flex: 1; display: flex; flex-direction: column; gap: 6px; }
         .card-title { font-size: 0.9rem; font-weight: bold; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .btn-add { background: transparent; border: 1.5px solid #66fcf1; color: #66fcf1; padding: 8px; border-radius: 6px; font-weight: bold; }
+        .btn-add { background: transparent; border: 1.5px solid #66fcf1; color: #66fcf1; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="header"><h1>📱 Control de Música v2</h1></div>
+    <div class="header"><h1>📱 Control de Música v3</h1></div>
 
-    <form class="search-box" onsubmit="event.preventDefault(); searchYouTube();">
-        <input type="text" id="searchInput" placeholder="Escribe canción o artista...">
-        <button type="submit">Buscar</button>
+    <form id="searchForm" class="search-box">
+        <input type="text" id="searchInput" placeholder="Escribe canción o artista..." autocomplete="off">
+        <button type="submit" id="btnSearch">Buscar</button>
     </form>
 
     <div id="status-msg"></div>
     <div id="results"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Muestra cualquier error interno directamente en pantalla -->
     <script>
-        const supabaseUrl = 'https://zothgtvmkurannngxmumc.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        window.onerror = function(msg, url, line) {
+            var statusDiv = document.getElementById('status-msg');
+            if (statusDiv) {
+                statusDiv.className = 'error-box';
+                statusDiv.innerHTML = '<b>Error en código:</b> ' + msg + ' (Línea ' + line + ')';
+            }
+            return false;
+        };
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        const SUPABASE_URL = 'https://zothgtvmkurannngxmumc.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ';
         const YOUTUBE_API_KEY = "AIzaSyAHKvpCidYJTCFasu0XsQYvCSUwHsWA4mI";
 
+        let supabaseClient = null;
+
+        function getSupabase() {
+            if (!supabaseClient) {
+                if (window.supabase && window.supabase.createClient) {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                } else {
+                    throw new Error("No se pudo conectar con Supabase. Revisa la conexión.");
+                }
+            }
+            return supabaseClient;
+        }
+
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            searchYouTube();
+        });
+
         async function searchYouTube() {
-            const query = document.getElementById('searchInput').value.trim();
+            const searchInput = document.getElementById('searchInput');
+            const query = searchInput ? searchInput.value.trim() : '';
             const statusDiv = document.getElementById('status-msg');
             const resultsDiv = document.getElementById('results');
 
-            if (!query) { alert("Escribe algo en el buscador"); return; }
+            if (!query) {
+                alert("Escribe el nombre de una canción o artista");
+                return;
+            }
 
             statusDiv.className = '';
             statusDiv.style.color = '#66fcf1';
-            statusDiv.innerHTML = '🔍 Conectando con YouTube...';
+            statusDiv.innerHTML = '🔍 Buscando en YouTube...';
             resultsDiv.innerHTML = '';
 
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(query)}&type=video&key=${YOUTUBE_API_KEY}`;
-            
+
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-                
+
                 if (data.error) {
                     statusDiv.className = 'error-box';
                     statusDiv.innerHTML = '<b>Error YouTube (' + data.error.code + '):</b><br>' + data.error.message;
                     return;
                 }
-                
+
                 statusDiv.innerHTML = '';
                 displayResults(data.items);
             } catch (error) {
@@ -85,11 +120,13 @@
             videos.forEach(video => {
                 const item = document.createElement('div');
                 item.className = 'card';
+                const videoTitle = video.snippet.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                
                 item.innerHTML = `
                     <img class="thumb" src="${video.snippet.thumbnails.medium.url}">
                     <div class="card-info">
                         <div class="card-title">${video.snippet.title}</div>
-                        <button class="btn-add" onclick="addToQueue('${video.id.videoId}', '${video.snippet.title.replace(/'/g, "\\'")}')">+ Agregar</button>
+                        <button class="btn-add" onclick="addToQueue('${video.id.videoId}', '${videoTitle}')">+ Agregar</button>
                     </div>
                 `;
                 resultsDiv.appendChild(item);
@@ -97,14 +134,20 @@
         }
 
         async function addToQueue(videoId, title) {
-            const { error } = await supabase.from('cola_reproduccion').insert([{ video_id: videoId, title: title }]);
-            if (error) {
-                alert("Error Supabase: " + error.message);
-            } else {
-                alert("¡Agregada con éxito!");
-                document.getElementById('searchInput').value = '';
-                document.getElementById('results').innerHTML = '';
-                document.getElementById('status-msg').innerHTML = '';
+            try {
+                const client = getSupabase();
+                const { error } = await client.from('cola_reproduccion').insert([{ video_id: videoId, title: title }]);
+                
+                if (error) {
+                    alert("Error Supabase: " + error.message);
+                } else {
+                    alert("¡Canción agregada con éxito!");
+                    document.getElementById('searchInput').value = '';
+                    document.getElementById('results').innerHTML = '';
+                    document.getElementById('status-msg').innerHTML = '';
+                }
+            } catch (err) {
+                alert("Error: " + err.message);
             }
         }
     </script>
