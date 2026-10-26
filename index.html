@@ -208,7 +208,6 @@ img { display: block; max-width: 100%; }
   position: relative; isolation: isolate; overflow: hidden;
   background: var(--panel); border-left: 1px solid var(--line); padding: 1rem;
 }
-/* Aurora decorativa ajustada al azul */
 .player-card::before {
   content: ""; position: absolute; z-index: -1; left: -15%; right: -15%; top: -30%; height: 85%;
   background:
@@ -369,7 +368,6 @@ body[data-role="player"] .q-thumb, body[data-role="player"] .q-text { cursor: po
 .verify-out { margin-top: .8rem; font-size: .85rem; color: var(--muted); max-height: 10rem; overflow: auto; }
 .verify-out b { color: var(--coral); }
 
-/* Adaptaciones responsivas */
 @media (max-width: 1099px) {
   .net:not(.off) #netText { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
@@ -1013,48 +1011,40 @@ let gateT = null, wakeLock = null, seeking = false;
 const paintRange = el => el.style.setProperty('--p', ((el.value - el.min) / (el.max - el.min) * 100) + '%');
 
 /* 
- * CARGA Y POLLEO ROBUSTO DE LA API DE YOUTUBE 
- * Soluciona las condiciones de carrera y la inicialización silenciosa bloqueada en móviles.
+ * REPRODUCTOR BLINDADO PARA MÓVILES
+ * Carga directa y segura del API de YouTube sin bloqueos de iframe.
  */
 function loadYT() {
   if (S.role !== 'player') return;
-  if (S.yt) return;
+  if (S.yt && S.ytReady) return;
 
-  // Si el objeto YT ya fue cargado por completo previamente
   if (window.YT && window.YT.Player) { 
     createPlayer(); 
     return; 
   }
 
-  // Si ya pedimos el script y seguimos esperando
-  if (loadYT.loading) {
-    let wChecks = 0;
-    const wPoll = setInterval(() => {
-      wChecks++;
-      if (window.YT && window.YT.Player) {
-        clearInterval(wPoll);
-        if (!S.yt) createPlayer();
-      }
-      if (wChecks > 40) clearInterval(wPoll);
-    }, 250);
-    return;
-  }
-
-  loadYT.loading = true;
   window.onYouTubeIframeAPIReady = () => { createPlayer(); };
 
-  const s = document.createElement('script');
-  s.src = 'https://www.youtube.com/iframe_api'; 
-  s.async = true;
-  s.onerror = () => { loadYT.loading = false; toast('No se pudo cargar YouTube. Revisa la conexión.', true); };
-  document.head.appendChild(s);
+  if (!document.getElementById('yt-iframe-script')) {
+    const s = document.createElement('script');
+    s.id = 'yt-iframe-script';
+    s.src = 'https://www.youtube.com/iframe_api'; 
+    s.async = true;
+    s.onerror = () => { toast('No se pudo cargar YouTube. Revisa la conexión.', true); };
+    document.head.appendChild(s);
+  }
 }
 
 function createPlayer() {
-  if (S.role !== 'player' || S.yt) return;
-  
-  // Cambiamos autoplay: 1 a autoplay: 0 para evitar que los móviles bloqueen
-  // silenciosamente la inicialización del Iframe por completo.
+  if (S.role !== 'player') return;
+  if (S.yt) {
+    if (typeof S.yt.loadVideoById === 'function') {
+      S.ytReady = true;
+      syncPlayer();
+    }
+    return;
+  }
+
   const vars = { autoplay: 0, controls: 0, disablekb: 1, fs: 0, iv_load_policy: 3, modestbranding: 1, playsinline: 1, rel: 0 };
   if (/^https?:$/.test(location.protocol)) vars.origin = location.origin;
   
@@ -1063,55 +1053,31 @@ function createPlayer() {
   try {
     S.yt = new YT.Player('player', {
       width: '100%', height: '100%', playerVars: vars,
-      events: { onReady: onYTReady, onStateChange: onYTState, onError: onYTError }
-    });
-    
-    // FALLBACK: A veces Android/Chrome no dispara 'onReady' jamás a pesar de 
-    // estar completamente listo. Esto verifica sus tripas para forzar el evento.
-    let checks = 0;
-    const readyPoll = setInterval(() => {
-      checks++;
-      if (S.ytReady) { clearInterval(readyPoll); return; }
-      if (S.yt && typeof S.yt.getPlayerState === 'function') {
-        clearInterval(readyPoll);
-        onYTReady(); 
+      events: { 
+        onReady: (e) => {
+          S.ytReady = true;
+          const v = store.get('alaska_vol', 100);
+          try { e.target.setVolume(v); } catch(err){}
+          syncPlayer();
+        }, 
+        onStateChange: onYTState, 
+        onError: onYTError 
       }
-      if (checks > 40) clearInterval(readyPoll); // Desiste tras 10 segundos
-    }, 250);
-    
+    });
   } catch (e) {
-    toast('Hubo un error cargando el reproductor.', true);
+    // Si falla el constructor, limpiamos el contenedor para reintentar de cero
+    destroyPlayer();
   }
 }
 
 function destroyPlayer() {
   clearTimeout(gateT); setPlaying(false);
-  try { if (S.yt && S.yt.destroy) S.yt.destroy(); } catch (e) { }
+  try { if (S.yt && typeof S.yt.destroy === 'function') S.yt.destroy(); } catch (e) { }
   S.yt = null; S.ytReady = false; S.currentId = null;
   
   const box = $('#playerBox');
   if (!box) return;
-  
-  // Limpieza total del contenedor anterior
-  const old = $('#player');
-  if (old) old.remove();
-  const iframes = box.querySelectorAll('iframe');
-  iframes.forEach(ifr => ifr.remove());
-  
-  const d = document.createElement('div');
-  d.id = 'player';
-  box.insertBefore(d, box.firstChild);
-  
-  $('#gate').hidden = true; $('#idle').hidden = false;
-}
-
-function onYTReady() {
-  S.ytReady = true;
-  const v = store.get('alaska_vol', 100);
-  try { S.yt.setVolume(v); } catch (e) { }
-  const vol = $('#vol'); vol.value = v; paintRange(vol);
-  $('#volIcon').setAttribute('href', v === 0 ? '#i-mute' : '#i-vol');
-  syncPlayer();
+  box.innerHTML = '<div id="player"></div><div class="idle" id="idle"><svg class="i" aria-hidden="true"><use href="#i-note"/></svg><strong>Nada suena todavía</strong><span>Agrega canciones a la fila</span></div><div class="shield" id="shield"></div><div class="gate" id="gate" hidden><button type="button" id="gateBtn"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Tocar para activar el sonido</button></div>';
 }
 
 function onYTState(e) {
@@ -1143,14 +1109,22 @@ function playFirstOrIdle() {
 }
 function goIdle() {
   S.currentId = null; clearTimeout(gateT);
-  try { S.yt.stopVideo(); } catch (e) { }
+  try { if (S.yt && typeof S.yt.stopVideo === 'function') S.yt.stopVideo(); } catch (e) { }
   $('#idle').hidden = false; $('#gate').hidden = true; setPlaying(false);
   resetProgress(); updateNow(); renderQueue(); updateTitle();
 }
 function playRow(row) {
+  if (!S.yt || !S.ytReady || typeof S.yt.loadVideoById !== 'function') {
+    loadYT();
+    setTimeout(() => { if (S.yt && S.ytReady) playRow(row); }, 800);
+    return;
+  }
   S.currentId = row.id;
   $('#idle').hidden = true; $('#gate').hidden = true;
-  try { S.yt.loadVideoById(row.video_id); } catch (e) { }
+  try { 
+    S.yt.loadVideoById(row.video_id); 
+    S.yt.playVideo();
+  } catch (e) { }
   resetProgress(); armGate(); updateNow(); renderQueue(); updateTitle();
 }
 function armGate() {
@@ -1209,15 +1183,17 @@ function skipSong() {
 }
 function playNow(rowId) {
   const row = S.queue.find(r => r.id === rowId);
-  if (!row || rowId === S.currentId) return;
+  if (!row) return;
   
-  if (!S.ytReady) { 
-      toast('Preparando el reproductor, intenta de nuevo...');
-      loadYT(); // Reintentamos cargar la API por si acaso
-      return; 
+  if (!S.yt || !S.ytReady) {
+    loadYT();
+    toast('Iniciando reproductor...');
+    setTimeout(() => { playNow(rowId); }, 1000);
+    return;
   }
   if (S.currentId) dropRow(S.currentId);
-  playRow(row); afterQueue(false);
+  playRow(row); 
+  afterQueue(false);
 }
 function removeFromQueue(rowId) {
   if (rowId === S.currentId) { advance(); toast('Pasando a la siguiente'); return; }
@@ -1225,23 +1201,30 @@ function removeFromQueue(rowId) {
 }
 
 function togglePlay() {
-  if (!S.ytReady) return;
-  if (!S.currentId) { toast('Agrega canciones a la fila'); return; }
-  if (S.yt.getPlayerState() === YT.PlayerState.PLAYING) S.yt.pauseVideo(); else S.yt.playVideo();
+  if (!S.ytReady) { loadYT(); return; }
+  if (!S.currentId) { playFirstOrIdle(); return; }
+  try {
+    if (S.yt.getPlayerState() === YT.PlayerState.PLAYING) S.yt.pauseVideo(); 
+    else S.yt.playVideo();
+  } catch(e) {
+    playFirstOrIdle();
+  }
 }
 function seekBy(sec) {
   if (S.ytReady && S.currentId) S.yt.seekTo(Math.max(0, S.yt.getCurrentTime() + sec), true);
 }
 function setVol(v) {
   v = +v;
-  if (S.ytReady) { S.yt.setVolume(v); if (v > 0 && S.yt.isMuted()) S.yt.unMute(); }
+  if (S.ytReady) { try { S.yt.setVolume(v); if (v > 0 && S.yt.isMuted()) S.yt.unMute(); } catch(e){} }
   store.set('alaska_vol', v);
   $('#volIcon').setAttribute('href', v === 0 ? '#i-mute' : '#i-vol'); paintRange($('#vol'));
 }
 function toggleMute() {
   if (!S.ytReady) return;
-  if (S.yt.isMuted()) S.yt.unMute(); else S.yt.mute();
-  $('#volIcon').setAttribute('href', S.yt.isMuted() ? '#i-mute' : '#i-vol');
+  try {
+    if (S.yt.isMuted()) S.yt.unMute(); else S.yt.mute();
+    $('#volIcon').setAttribute('href', S.yt.isMuted() ? '#i-mute' : '#i-vol');
+  } catch(e){}
 }
 function toggleFull() {
   const d = document, el = $('#playerBox');
@@ -1385,8 +1368,6 @@ function setRole(role, persist) {
   $('#roleIcon').setAttribute('href', role === 'player' ? '#i-tv' : '#i-phone');
   if (persist) store.set('alaska_role', role);
 
-  // Aumentamos a 300ms. Es crucial que el contenedor "#playerBox" tenga
-  // dimensiones completas establecidas por el navegador antes de crear el iframe.
   if (role === 'player') setTimeout(startPlayerMode, 300); 
   else stopPlayerMode();
   
