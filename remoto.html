@@ -29,10 +29,10 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        .search-box {
+        .search-form {
             display: flex;
             gap: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             position: sticky;
             top: 10px;
             z-index: 100;
@@ -56,6 +56,21 @@
             font-weight: bold;
             font-size: 1rem;
             cursor: pointer;
+        }
+        #status-msg {
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .error-box {
+            color: #ff6b6b;
+            background: #2b1111;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ff4444;
+            text-align: left;
+            font-size: 0.85rem;
+            line-height: 1.4;
         }
         #results {
             display: flex;
@@ -115,11 +130,12 @@
         <h1>📱 Control de Música</h1>
     </div>
 
-    <div class="search-box">
+    <form class="search-form" onsubmit="event.preventDefault(); searchYouTube();">
         <input type="text" id="searchInput" placeholder="Buscar canción o artista...">
-        <button class="btn-search" onclick="searchYouTube()">Buscar</button>
-    </div>
+        <button type="submit" class="btn-search">Buscar</button>
+    </form>
 
+    <div id="status-msg"></div>
     <div id="results"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -131,8 +147,17 @@
         const YOUTUBE_API_KEY = "AIzaSyAHKvpCidYJTCFasu0XsQYvCSUwHsWA4mI";
 
         window.searchYouTube = async function() {
-            const query = document.getElementById('searchInput').value;
+            const query = document.getElementById('searchInput').value.trim();
+            const statusDiv = document.getElementById('status-msg');
+            const resultsDiv = document.getElementById('results');
+
             if (!query) return;
+
+            statusDiv.className = '';
+            statusDiv.style.color = '#66fcf1';
+            statusDiv.innerHTML = '🔍 Buscando en YouTube...';
+            resultsDiv.innerHTML = '';
+
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(query)}&type=video&key=${YOUTUBE_API_KEY}`;
             
             try {
@@ -140,12 +165,16 @@
                 const data = await response.json();
                 
                 if (data.error) {
-                    alert("Error de YouTube: " + data.error.message);
+                    statusDiv.className = 'error-box';
+                    statusDiv.innerHTML = '<b>Error de YouTube:</b> ' + data.error.message;
                     return;
                 }
+                
+                statusDiv.innerHTML = '';
                 displayResults(data.items);
             } catch (error) {
-                alert("Error al conectar con el servidor de búsqueda.");
+                statusDiv.className = 'error-box';
+                statusDiv.innerHTML = '<b>Error de conexión:</b> ' + error.message;
             }
         };
 
@@ -154,7 +183,7 @@
             resultsDiv.innerHTML = '';
 
             if (!videos || videos.length === 0) {
-                resultsDiv.innerHTML = '<p style="text-align:center; color:#c5c6c7;">No se encontraron resultados.</p>';
+                document.getElementById('status-msg').innerHTML = '<p style="color:#c5c6c7;">No se encontraron resultados.</p>';
                 return;
             }
 
@@ -182,6 +211,7 @@
                 alert("¡Canción agregada a la lista de la pantalla!");
                 document.getElementById('searchInput').value = '';
                 document.getElementById('results').innerHTML = '';
+                document.getElementById('status-msg').innerHTML = '';
             }
         };
     </script>
