@@ -24,14 +24,12 @@
         <div id="queue-list">Cargando base de datos...</div>
     </div>
 
-    <!-- YouTube & Supabase SDKs -->
     <script src="https://www.youtube.com/iframe_api"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // 1. Credenciales Supabase (Reemplaza con tu URL y Anon Key)
-        const supabaseUrl = 'TU_URL_DE_SUPABASE';
-        const supabaseKey = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ;
+        const supabaseUrl = 'https://zothgtvmkurannngxmumc.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         let player;
@@ -39,7 +37,6 @@
         let currentSongId = null;
         let queueData = [];
 
-        // 2. Cargar YouTube API
         window.onYouTubeIframeAPIReady = () => {
             player = new YT.Player('player', {
                 playerVars: { 'autoplay': 1, 'controls': 1 },
@@ -50,7 +47,6 @@
         async function onPlayerReady(event) {
             await fetchQueue();
             
-            // 3. Escuchar cambios en Supabase en tiempo real
             supabase.channel('custom-all-channel')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'cola_reproduccion' }, (payload) => {
                     if (payload.eventType === 'INSERT') {
@@ -83,7 +79,6 @@
 
         async function onPlayerStateChange(event) {
             if (event.data === YT.PlayerState.ENDED && currentSongId) {
-                // Borrar canción terminada
                 await supabase.from('cola_reproduccion').delete().eq('id', currentSongId);
                 queueData = queueData.filter(song => song.id !== currentSongId);
                 currentSongId = null;
@@ -98,7 +93,7 @@
                 const nextSong = queueData[0];
                 currentSongId = nextSong.id;
                 isPlaying = true;
-                renderQueue(); // Actualizar colores
+                renderQueue(); 
                 player.loadVideoById(nextSong.video_id);
             }
         }
