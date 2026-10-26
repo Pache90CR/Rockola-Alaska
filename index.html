@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jukebox Live - Reproductor</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #0f0f13;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #player-container {
+            flex: 2;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        #player {
+            width: 100%;
+            flex-grow: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+        }
+        #queue-container {
+            flex: 1;
+            background-color: #1a1a24;
+            padding: 20px;
+            border-left: 1px solid #2d2d3d;
+            display: flex;
+            flex-direction: column;
+        }
+        h2 { margin-top: 0; font-size: 1.2rem; color: #00ffff; }
+        .queue-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: #252535;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .queue-item.playing { border-left: 4px solid #ff00ff; }
+        .title { font-weight: bold; margin-bottom: 4px; }
+        .requested-by { font-size: 0.8rem; color: #aaaaaa; }
+    </style>
+</head>
+<body>
+
+    <div id="player-container">
+        <div id="player"></div>
+    </div>
+
+    <div id="queue-container">
+        <h2>Fila de Reproducción</h2>
+        <div id="queue-list">Esperando canciones...</div>
+    </div>
+
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <!-- Firebase y Lógica del Reproductor -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // 1. Configuración de Firebase (Reemplaza con tus datos)
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            databaseURL: "https://TU_PROYECTO-default-rtdb.firebaseio.com",
+            projectId: "TU_PROYECTO",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const queueRef = ref(db, 'cola_reproduccion');
+
+        let player;
+        let isPlaying = false;
+        let currentSongKey = null;
+        let queueData = [];
+
+        // 2. Inicializar reproductor de YouTube
+        window.onYouTubeIframeAPIReady = () => {
+            player = new YT.Player('player', {
+                playerVars: { 'autoplay': 1, 'controls': 1 },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        };
+
+        function onPlayerReady(event) {
+            // 3. Escuchar cambios en Firebase en tiempo real
+            onValue(queueRef, (snapshot) => {
+                const data = snapshot.val();
+                queueData = [];
+                const queueListDiv = document.getElementById('queue-list');
+                queueListDiv.innerHTML = '';
+
+                if (data) {
+                    for (const key in data) {
+                        queueData.push({ key: key, ...data[key] });
+                    }
+                    
+                    // Ordenar por timestamp si lo incluyes desde la app móvil
+                    queueData.forEach((song, index) => {
+                        const item = document.createElement('div');
+                        item.className = `queue-item ${key === currentSongKey ? 'playing' : ''}`;
+                        item.innerHTML = `<span class="title">${song.title}</span><span class="requested-by">Añadido desde móvil</span>`;
+                        queueListDiv.appendChild(item);
+                    });
+
+                    playNext();
+                } else {
+                    queueListDiv.innerHTML = 'Fila vacía...';
+                }
+            });
+        }
+
+        async function onPlayerStateChange(event) {
+            // Cuando el video termina (Estado 0)
+            if (event.data === YT.PlayerState.ENDED && currentSongKey) {
+                const songToRemove = ref(db, `cola_reproduccion/${currentSongKey}`);
+                await remove(songToRemove);
+                currentSongKey = null;
+                isPlaying = false;
+                // La eliminación dispara onValue automáticamente y reproduce la siguiente
+            }
+        }
+
+        function playNext() {
+            if (!isPlaying && queueData.length > 0) {
+                const nextSong = queueData[0];
+                currentSongKey = nextSong.key;
+                isPlaying = true;
+                player.loadVideoById(nextSong.videoId);
+            }
+        }
+    </script>
+</body>
+</html>
