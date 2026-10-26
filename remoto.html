@@ -4,135 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Rockola Alaska - Control Remoto</title>
-    <!-- Previsualización WhatsApp -->
-    <meta property="og:title" content="Rockola Alaska - Control Móvil">
-    <meta property="og:description" content="Buscador de canciones para pedir música en Bar Restaurante Alaska.">
     <style>
         * { box-sizing: border-box; }
-        body {
-            margin: 0;
-            background-color: #0b0c10;
-            color: #ffffff;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            padding: 15px;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #1f2833;
-        }
-        .header h1 {
-            color: #66fcf1;
-            font-size: 1.3rem;
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .search-form {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-            position: sticky;
-            top: 10px;
-            z-index: 100;
-        }
-        input[type="text"] {
-            flex: 1;
-            padding: 14px;
-            border-radius: 10px;
-            border: 1px solid #45a29e;
-            background-color: #1f2833;
-            color: #ffffff;
-            font-size: 1rem;
-            outline: none;
-        }
-        button.btn-search {
-            padding: 14px 20px;
-            border-radius: 10px;
-            border: none;
-            background-color: #66fcf1;
-            color: #0b0c10;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-        #status-msg {
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            text-align: center;
-        }
-        .error-box {
-            color: #ff6b6b;
-            background: #2b1111;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #ff4444;
-            text-align: left;
-            font-size: 0.85rem;
-            line-height: 1.4;
-        }
-        #results {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .card {
-            background-color: #1f2833;
-            border-radius: 10px;
-            padding: 12px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            border: 1px solid #2c3846;
-        }
-        .thumb {
-            width: 100px;
-            height: 70px;
-            object-fit: cover;
-            border-radius: 6px;
-        }
-        .card-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .card-title {
-            font-size: 0.9rem;
-            font-weight: bold;
-            line-height: 1.2;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        .btn-add {
-            background-color: transparent;
-            border: 1.5px solid #66fcf1;
-            color: #66fcf1;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 0.85rem;
-            align-self: flex-start;
-            cursor: pointer;
-        }
-        .btn-add:active {
-            background-color: #66fcf1;
-            color: #0b0c10;
-        }
+        body { margin: 0; background-color: #0b0c10; color: #ffffff; font-family: sans-serif; padding: 15px; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 1px solid #1f2833; padding-bottom: 10px; }
+        .header h1 { color: #66fcf1; font-size: 1.3rem; margin: 0; }
+        .search-box { display: flex; gap: 8px; margin-bottom: 15px; }
+        input[type="text"] { flex: 1; padding: 14px; border-radius: 10px; border: 1px solid #45a29e; background-color: #1f2833; color: white; font-size: 1rem; }
+        button { padding: 14px 18px; border-radius: 10px; border: none; background-color: #66fcf1; color: #0b0c10; font-weight: bold; font-size: 1rem; }
+        #status-msg { margin-bottom: 15px; text-align: center; font-size: 0.9rem; }
+        .error-box { color: #ff6b6b; background: #2b1111; padding: 12px; border-radius: 8px; border: 1px solid #ff4444; word-break: break-word; }
+        #results { display: flex; flex-direction: column; gap: 12px; }
+        .card { background-color: #1f2833; border-radius: 10px; padding: 12px; display: flex; gap: 12px; align-items: center; border: 1px solid #2c3846; }
+        .thumb { width: 100px; height: 70px; object-fit: cover; border-radius: 6px; }
+        .card-info { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+        .card-title { font-size: 0.9rem; font-weight: bold; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .btn-add { background: transparent; border: 1.5px solid #66fcf1; color: #66fcf1; padding: 8px; border-radius: 6px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>📱 Control de Música</h1>
-    </div>
+    <div class="header"><h1>📱 Control de Música v2</h1></div>
 
-    <form class="search-form" onsubmit="event.preventDefault(); searchYouTube();">
-        <input type="text" id="searchInput" placeholder="Buscar canción o artista...">
-        <button type="submit" class="btn-search">Buscar</button>
+    <form class="search-box" onsubmit="event.preventDefault(); searchYouTube();">
+        <input type="text" id="searchInput" placeholder="Escribe canción o artista...">
+        <button type="submit">Buscar</button>
     </form>
 
     <div id="status-msg"></div>
@@ -143,19 +39,18 @@
         const supabaseUrl = 'https://zothgtvmkurannngxmumc.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        
         const YOUTUBE_API_KEY = "AIzaSyAHKvpCidYJTCFasu0XsQYvCSUwHsWA4mI";
 
-        window.searchYouTube = async function() {
+        async function searchYouTube() {
             const query = document.getElementById('searchInput').value.trim();
             const statusDiv = document.getElementById('status-msg');
             const resultsDiv = document.getElementById('results');
 
-            if (!query) return;
+            if (!query) { alert("Escribe algo en el buscador"); return; }
 
             statusDiv.className = '';
             statusDiv.style.color = '#66fcf1';
-            statusDiv.innerHTML = '🔍 Buscando en YouTube...';
+            statusDiv.innerHTML = '🔍 Conectando con YouTube...';
             resultsDiv.innerHTML = '';
 
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(query)}&type=video&key=${YOUTUBE_API_KEY}`;
@@ -166,7 +61,7 @@
                 
                 if (data.error) {
                     statusDiv.className = 'error-box';
-                    statusDiv.innerHTML = '<b>Error de YouTube:</b> ' + data.error.message;
+                    statusDiv.innerHTML = '<b>Error YouTube (' + data.error.code + '):</b><br>' + data.error.message;
                     return;
                 }
                 
@@ -174,16 +69,16 @@
                 displayResults(data.items);
             } catch (error) {
                 statusDiv.className = 'error-box';
-                statusDiv.innerHTML = '<b>Error de conexión:</b> ' + error.message;
+                statusDiv.innerHTML = '<b>Error de red:</b> ' + error.message;
             }
-        };
+        }
 
         function displayResults(videos) {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
 
             if (!videos || videos.length === 0) {
-                document.getElementById('status-msg').innerHTML = '<p style="color:#c5c6c7;">No se encontraron resultados.</p>';
+                document.getElementById('status-msg').innerHTML = 'No se encontraron videos.';
                 return;
             }
 
@@ -191,29 +86,27 @@
                 const item = document.createElement('div');
                 item.className = 'card';
                 item.innerHTML = `
-                    <img class="thumb" src="${video.snippet.thumbnails.medium.url}" alt="Miniatura">
+                    <img class="thumb" src="${video.snippet.thumbnails.medium.url}">
                     <div class="card-info">
                         <div class="card-title">${video.snippet.title}</div>
-                        <button class="btn-add" onclick="addToQueue('${video.id.videoId}', '${video.snippet.title.replace(/'/g, "\\'")}')">
-                            + Agregar a la fila
-                        </button>
+                        <button class="btn-add" onclick="addToQueue('${video.id.videoId}', '${video.snippet.title.replace(/'/g, "\\'")}')">+ Agregar</button>
                     </div>
                 `;
                 resultsDiv.appendChild(item);
             });
         }
 
-        window.addToQueue = async function(videoId, title) {
+        async function addToQueue(videoId, title) {
             const { error } = await supabase.from('cola_reproduccion').insert([{ video_id: videoId, title: title }]);
             if (error) {
-                alert("Error al agregar: " + error.message);
+                alert("Error Supabase: " + error.message);
             } else {
-                alert("¡Canción agregada a la lista de la pantalla!");
+                alert("¡Agregada con éxito!");
                 document.getElementById('searchInput').value = '';
                 document.getElementById('results').innerHTML = '';
                 document.getElementById('status-msg').innerHTML = '';
             }
-        };
+        }
     </script>
 </body>
 </html>
