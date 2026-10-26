@@ -102,7 +102,7 @@
 
     <header>
         <div class="brand">❄️ BAR RESTAURANTE ALASKA — ROCKOLA</div>
-        <div class="status-badge" id="connection-status">● En línea</div>
+        <div class="status-badge" id="connection-status">● Conectando...</div>
     </header>
 
     <div class="main-layout">
@@ -111,19 +111,20 @@
         </div>
         <div id="queue-sidebar">
             <h2>Fila de Reproducción</h2>
-            <div id="queue-list">Conectando con Supabase...</div>
+            <div id="queue-list">Cargando canciones...</div>
         </div>
     </div>
 
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
 
     <script>
         const supabaseUrl = 'https://zothgtvmkuranngxmumc.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        let player;
+        let player = null;
+        let isPlayerReady = false;
         let isPlaying = false;
         let currentSongId = null;
         let queueData = [];
@@ -131,34 +132,78 @@
         window.onYouTubeIframeAPIReady = () => {
             player = new YT.Player('player', {
                 playerVars: { 'autoplay': 1, 'controls': 1 },
-                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
+                events: {
+                    'onReady': () => {
+                        isPlayerReady = true;
+                        if (!isPlaying && queueData.length > 0) {
+                            playNext();
+                        }
+                    },
+                    'onStateChange': onPlayerStateChange
+                }
             });
         };
 
-        async function onPlayerReady(event) {
+        async function init() {
             await fetchQueue();
-            
+            subscribeRealtime();
+        }
+
+        async function fetchQueue() {
+            try {
+                const { data, error } = await supabase
+                    .from('cola_reproduccion')
+                    .select('*')
+                    .order('created_at', { ascending: true });
+
+                if (error) {
+                    document.getElementById('queue-list').innerHTML = '<p style="color:#ff6b6b;">Error: ' + error.message + '</p>';
+                    return;
+                }
+
+                queueData = data || [];
+                renderQueue();
+                if (isPlayerReady && !isPlaying) {
+                    playNext();
+                }
+            } catch (err) {
+                document.getElementById('queue-list').innerHTML = '<p style="color:#ff6b6b;">Error de red: ' + err.message + '</p>';
+            }
+        }
+
+        function subscribeRealtime() {
             supabase.channel('custom-all-channel')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'cola_reproduccion' }, (payload) => {
                     if (payload.eventType === 'INSERT') {
-                        queueData.push(payload.new);
+                        if (!queueData.some(s => s.id === payload.new.id)) {
+                            queueData.push(payload.new);
+                        }
                     } else if (payload.eventType === 'DELETE') {
                         queueData = queueData.filter(song => song.id !== payload.old.id);
                     }
                     renderQueue();
-                    if (!isPlaying) playNext();
-                }).subscribe();
-        }
-
-        async function fetchQueue() {
-            const { data, error } = await supabase.from('cola_reproduccion').select('*').order('created_at', { ascending: true });
-            if (data) { queueData = data; renderQueue(); playNext(); }
+                    if (isPlayerReady && !isPlaying) {
+                        playNext();
+                    }
+                }).subscribe((status) => {
+                    const badge = document.getElementById('connection-status');
+                    if (status === 'SUBSCRIBED') {
+                        badge.style.backgroundColor = '#45a29e';
+                        badge.textContent = '● En línea (Tiempo Real)';
+                    } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+                        badge.style.backgroundColor = '#ff6b6b';
+                        badge.textContent = '● Desconectado';
+                    }
+                });
         }
 
         function renderQueue() {
             const queueListDiv = document.getElementById('queue-list');
             queueListDiv.innerHTML = '';
-            if (queueData.length === 0) { queueListDiv.innerHTML = '<p style="color:#c5c6c7;">Sin canciones en fila. Agrega desde el celular.</p>'; return; }
+            if (queueData.length === 0) {
+                queueListDiv.innerHTML = '<p style="color:#c5c6c7;">Sin canciones en fila. Agrega desde el celular.</p>';
+                return;
+            }
             
             queueData.forEach((song, idx) => {
                 const item = document.createElement('div');
@@ -184,7 +229,7 @@
         }
 
         function playNext() {
-            if (!isPlaying && queueData.length > 0) {
+            if (isPlayerReady && !isPlaying && queueData.length > 0) {
                 const nextSong = queueData[0];
                 currentSongId = nextSong.id;
                 isPlaying = true;
@@ -192,6 +237,8 @@
                 player.loadVideoById(nextSong.video_id);
             }
         }
+
+        init();
     </script>
 </body>
 </html>
