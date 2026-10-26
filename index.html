@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rockola Alaska - Reproductor</title>
+    <style>
+        body { margin: 0; background-color: #0f0f13; color: #ffffff; font-family: 'Segoe UI', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+        #player-container { flex: 2; padding: 20px; display: flex; flex-direction: column; }
+        #player { width: 100%; flex-grow: 1; border-radius: 12px; box-shadow: 0 0 20px rgba(0, 255, 255, 0.1); }
+        #queue-container { flex: 1; background-color: #1a1a24; padding: 20px; border-left: 1px solid #2d2d3d; display: flex; flex-direction: column; overflow-y: auto; }
+        h2 { margin-top: 0; font-size: 1.2rem; color: #00ffff; }
+        .queue-item { padding: 12px; margin-bottom: 10px; background-color: #252535; border-radius: 8px; font-size: 0.9rem; display: flex; flex-direction: column; }
+        .queue-item.playing { border-left: 4px solid #ff00ff; }
+        .title { font-weight: bold; margin-bottom: 4px; }
+        .requested-by { font-size: 0.8rem; color: #aaaaaa; }
+    </style>
+</head>
+<body>
+
+    <div id="player-container"><div id="player"></div></div>
+    <div id="queue-container">
+        <h2>Fila de Reproducción</h2>
+        <div id="queue-list">Cargando base de datos...</div>
+    </div>
+
+    <!-- YouTube & Supabase SDKs -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        // 1. Credenciales Supabase (Reemplaza con tu URL y Anon Key)
+        const supabaseUrl = 'TU_URL_DE_SUPABASE';
+        const supabaseKey = 'TU_ANON_KEY';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        let player;
+        let isPlaying = false;
+        let currentSongId = null;
+        let queueData = [];
+
+        // 2. Cargar YouTube API
+        window.onYouTubeIframeAPIReady = () => {
+            player = new YT.Player('player', {
+                playerVars: { 'autoplay': 1, 'controls': 1 },
+                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
+            });
+        };
+
+        async function onPlayerReady(event) {
+            await fetchQueue();
+            
+            // 3. Escuchar cambios en Supabase en tiempo real
+            supabase.channel('custom-all-channel')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'cola_reproduccion' }, (payload) => {
+                    if (payload.eventType === 'INSERT') {
+                        queueData.push(payload.new);
+                    } else if (payload.eventType === 'DELETE') {
+                        queueData = queueData.filter(song => song.id !== payload.old.id);
+                    }
+                    renderQueue();
+                    if (!isPlaying) playNext();
+                }).subscribe();
+        }
+
+        async function fetchQueue() {
+            const { data, error } = await supabase.from('cola_reproduccion').select('*').order('created_at', { ascending: true });
+            if (data) { queueData = data; renderQueue(); playNext(); }
+        }
+
+        function renderQueue() {
+            const queueListDiv = document.getElementById('queue-list');
+            queueListDiv.innerHTML = '';
+            if (queueData.length === 0) { queueListDiv.innerHTML = 'Fila vacía...'; return; }
+            
+            queueData.forEach(song => {
+                const item = document.createElement('div');
+                item.className = `queue-item ${song.id === currentSongId ? 'playing' : ''}`;
+                item.innerHTML = `<span class="title">${song.title}</span><span class="requested-by">Añadido desde móvil</span>`;
+                queueListDiv.appendChild(item);
+            });
+        }
+
+        async function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED && currentSongId) {
+                // Borrar canción terminada
+                await supabase.from('cola_reproduccion').delete().eq('id', currentSongId);
+                queueData = queueData.filter(song => song.id !== currentSongId);
+                currentSongId = null;
+                isPlaying = false;
+                renderQueue();
+                playNext();
+            }
+        }
+
+        function playNext() {
+            if (!isPlaying && queueData.length > 0) {
+                const nextSong = queueData[0];
+                currentSongId = nextSong.id;
+                isPlaying = true;
+                renderQueue(); // Actualizar colores
+                player.loadVideoById(nextSong.video_id);
+            }
+        }
+    </script>
+</body>
+</html>
