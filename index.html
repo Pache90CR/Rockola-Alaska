@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rockola Alaska - Reproductor TV</title>
-    <!-- Previsualización WhatsApp -->
-    <meta property="og:title" content="Rockola Alaska - Reproductor Principal">
-    <meta property="og:description" content="Pantalla de reproducción de video y fila musical en vivo para Bar Restaurante Alaska.">
     <style>
         * { box-sizing: border-box; }
         body {
@@ -85,7 +82,7 @@
             transition: all 0.3s ease;
         }
         .queue-item.playing {
-            border-left-color: #45a29e;
+            border-left-color: #66fcf1;
             box-shadow: 0 0 10px rgba(102, 252, 241, 0.3);
             background-color: #121921;
         }
@@ -122,7 +119,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        const supabaseUrl = 'https://zothgtvmkurannngxmumc.supabase.co';
+        const supabaseUrl = 'https://zothgtvmkuranngxmumc.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
