@@ -2,101 +2,96 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rockola Alaska - Reproductor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rockola Alaska - Control</title>
     <style>
-        body { margin: 0; background-color: #0f0f13; color: #ffffff; font-family: 'Segoe UI', sans-serif; display: flex; height: 100vh; overflow: hidden; }
-        #player-container { flex: 2; padding: 20px; display: flex; flex-direction: column; }
-        #player { width: 100%; flex-grow: 1; border-radius: 12px; box-shadow: 0 0 20px rgba(0, 255, 255, 0.1); }
-        #queue-container { flex: 1; background-color: #1a1a24; padding: 20px; border-left: 1px solid #2d2d3d; display: flex; flex-direction: column; overflow-y: auto; }
-        h2 { margin-top: 0; font-size: 1.2rem; color: #00ffff; }
-        .queue-item { padding: 12px; margin-bottom: 10px; background-color: #252535; border-radius: 8px; font-size: 0.9rem; display: flex; flex-direction: column; }
-        .queue-item.playing { border-left: 4px solid #ff00ff; }
-        .title { font-weight: bold; margin-bottom: 4px; }
-        .requested-by { font-size: 0.8rem; color: #aaaaaa; }
+        body { margin: 0; background-color: #0f0f13; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding: 20px; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { color: #00ffff; font-size: 1.5rem; margin: 0; }
+        .search-container { display: flex; gap: 10px; margin-bottom: 20px; }
+        input[type="text"] { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #2d2d3d; background-color: #1a1a24; color: white; font-size: 1rem; }
+        button { padding: 12px 20px; border-radius: 8px; border: none; background-color: #ff00ff; color: white; font-weight: bold; font-size: 1rem; cursor: pointer; }
+        #results { display: flex; flex-direction: column; gap: 15px; }
+        .result-item { background-color: #1a1a24; border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 15px; }
+        .thumbnail { width: 120px; border-radius: 6px; }
+        .info { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+        .title { font-size: 0.95rem; font-weight: bold; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .add-btn { background-color: transparent; border: 2px solid #00ffff; color: #00ffff; padding: 8px; font-size: 0.9rem; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-    <div id="player-container"><div id="player"></div></div>
-    <div id="queue-container">
-        <h2>Fila de Reproducción</h2>
-        <div id="queue-list">Cargando base de datos...</div>
+    <div class="header"><h1>Buscador de Canciones</h1></div>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Buscar artista o canción...">
+        <button onclick="searchYouTube()">Buscar</button>
     </div>
+    <div id="results"></div>
 
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script>
         const supabaseUrl = 'https://zothgtvmkurannngxmumc.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        const YOUTUBE_API_KEY = "TU_API_KEY_YOUTUBE";
 
-        let player;
-        let isPlaying = false;
-        let currentSongId = null;
-        let queueData = [];
-
-        window.onYouTubeIframeAPIReady = () => {
-            player = new YT.Player('player', {
-                playerVars: { 'autoplay': 1, 'controls': 1 },
-                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
-            });
+        window.searchYouTube = async function() {
+            const query = document.getElementById('searchInput').value;
+            if (!query) return;
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(query)}&type=video&key=${YOUTUBE_API_KEY}`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.error) {
+                    alert("Error de YouTube: " + data.error.message);
+                    return;
+                }
+                
+                displayResults(data.items);
+            } catch (error) {
+                console.error("Error buscando:", error);
+                alert("Error de conexión al buscar.");
+            }
         };
 
-        async function onPlayerReady(event) {
-            await fetchQueue();
+        function displayResults(videos) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
             
-            supabase.channel('custom-all-channel')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'cola_reproduccion' }, (payload) => {
-                    if (payload.eventType === 'INSERT') {
-                        queueData.push(payload.new);
-                    } else if (payload.eventType === 'DELETE') {
-                        queueData = queueData.filter(song => song.id !== payload.old.id);
-                    }
-                    renderQueue();
-                    if (!isPlaying) playNext();
-                }).subscribe();
-        }
+            if (!videos || videos.length === 0) {
+                resultsDiv.innerHTML = 'No se encontraron resultados.';
+                return;
+            }
 
-        async function fetchQueue() {
-            const { data, error } = await supabase.from('cola_reproduccion').select('*').order('created_at', { ascending: true });
-            if (data) { queueData = data; renderQueue(); playNext(); }
-        }
-
-        function renderQueue() {
-            const queueListDiv = document.getElementById('queue-list');
-            queueListDiv.innerHTML = '';
-            if (queueData.length === 0) { queueListDiv.innerHTML = 'Fila vacía...'; return; }
-            
-            queueData.forEach(song => {
+            videos.forEach(video => {
                 const item = document.createElement('div');
-                item.className = `queue-item ${song.id === currentSongId ? 'playing' : ''}`;
-                item.innerHTML = `<span class="title">${song.title}</span><span class="requested-by">Añadido desde móvil</span>`;
-                queueListDiv.appendChild(item);
+                item.className = 'result-item';
+                item.innerHTML = `
+                    <img class="thumbnail" src="${video.snippet.thumbnails.medium.url}" alt="Miniatura">
+                    <div class="info">
+                        <div class="title">${video.snippet.title}</div>
+                        <button class="add-btn" onclick="addToQueue('${video.id.videoId}', '${video.snippet.title.replace(/'/g, "\\'")}')">
+                            + Agregar a la fila
+                        </button>
+                    </div>
+                `;
+                resultsDiv.appendChild(item);
             });
         }
 
-        async function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.ENDED && currentSongId) {
-                await supabase.from('cola_reproduccion').delete().eq('id', currentSongId);
-                queueData = queueData.filter(song => song.id !== currentSongId);
-                currentSongId = null;
-                isPlaying = false;
-                renderQueue();
-                playNext();
+        window.addToQueue = async function(videoId, title) {
+            const { error } = await supabase.from('cola_reproduccion').insert([{ video_id: videoId, title: title }]);
+            if (error) {
+                alert("Error al agregar a Supabase: " + error.message);
+            } else {
+                alert("¡Canción agregada a la fila!");
+                document.getElementById('searchInput').value = '';
+                document.getElementById('results').innerHTML = '';
             }
-        }
-
-        function playNext() {
-            if (!isPlaying && queueData.length > 0) {
-                const nextSong = queueData[0];
-                currentSongId = nextSong.id;
-                isPlaying = true;
-                renderQueue(); 
-                player.loadVideoById(nextSong.video_id);
-            }
-        }
+        };
     </script>
 </body>
 </html>
