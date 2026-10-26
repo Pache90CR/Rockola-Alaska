@@ -3,138 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jukebox Live - Control Remoto</title>
+    <title>Rockola Alaska - Control Remoto</title>
+    <!-- Previsualización WhatsApp -->
+    <meta property="og:title" content="Rockola Alaska - Control Móvil">
+    <meta property="og:description" content="Buscador de canciones para pedir música en Bar Restaurante Alaska.">
     <style>
+        * { box-sizing: border-box; }
         body {
             margin: 0;
-            background-color: #0f0f13;
+            background-color: #0b0c10;
             color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 20px;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            padding: 15px;
         }
         .header {
             text-align: center;
             margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #1f2833;
         }
         .header h1 {
-            color: #00ffff;
-            font-size: 1.5rem;
+            color: #66fcf1;
+            font-size: 1.3rem;
             margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        .search-container {
+        .search-box {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 20px;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
         }
         input[type="text"] {
             flex: 1;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #2d2d3d;
-            background-color: #1a1a24;
-            color: white;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid #45a29e;
+            background-color: #1f2833;
+            color: #ffffff;
             font-size: 1rem;
+            outline: none;
         }
-        button {
-            padding: 12px 20px;
-            border-radius: 8px;
+        button.btn-search {
+            padding: 14px 20px;
+            border-radius: 10px;
             border: none;
-            background-color: #ff00ff;
-            color: white;
+            background-color: #66fcf1;
+            color: #0b0c10;
             font-weight: bold;
             font-size: 1rem;
             cursor: pointer;
         }
-        button:active {
-            transform: scale(0.98);
-        }
         #results {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
-        .result-item {
-            background-color: #1a1a24;
-            border-radius: 8px;
-            padding: 10px;
+        .card {
+            background-color: #1f2833;
+            border-radius: 10px;
+            padding: 12px;
             display: flex;
+            gap: 12px;
             align-items: center;
-            gap: 15px;
+            border: 1px solid #2c3846;
         }
-        .thumbnail {
-            width: 120px;
+        .thumb {
+            width: 100px;
+            height: 70px;
+            object-fit: cover;
             border-radius: 6px;
         }
-        .info {
+        .card-info {
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 6px;
         }
-        .title {
-            font-size: 0.95rem;
+        .card-title {
+            font-size: 0.9rem;
             font-weight: bold;
+            line-height: 1.2;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        .add-btn {
+        .btn-add {
             background-color: transparent;
-            border: 2px solid #00ffff;
-            color: #00ffff;
-            padding: 8px;
-            font-size: 0.9rem;
-            margin-top: 5px;
+            border: 1.5px solid #66fcf1;
+            color: #66fcf1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            align-self: flex-start;
+            cursor: pointer;
+        }
+        .btn-add:active {
+            background-color: #66fcf1;
+            color: #0b0c10;
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>Buscador de Canciones</h1>
+        <h1>📱 Control de Música</h1>
     </div>
 
-    <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Buscar artista o canción...">
-        <button onclick="searchYouTube()">Buscar</button>
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Buscar canción o artista...">
+        <button class="btn-search" onclick="searchYouTube()">Buscar</button>
     </div>
 
     <div id="results"></div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-        // 1. Configuración de Firebase (Debe ser idéntica a la del reproductor)
-        const firebaseConfig = {
-            apiKey: "TU_API_KEY_FIREBASE",
-            authDomain: "TU_PROYECTO.firebaseapp.com",
-            databaseURL: "https://TU_PROYECTO-default-rtdb.firebaseio.com",
-            projectId: "TU_PROYECTO",
-            storageBucket: "TU_PROYECTO.appspot.com",
-            messagingSenderId: "TU_SENDER_ID",
-            appId: "TU_APP_ID"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://zothgtvmkurannngxmumc.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
         
-        // 2. Clave de la API de YouTube
-        const YOUTUBE_API_KEY = AIzaSyAHKvpCidYJTCFasu0XsQYvCSUwHsWA4mI;
+        const YOUTUBE_API_KEY = "TU_API_KEY_YOUTUBE";
 
         window.searchYouTube = async function() {
             const query = document.getElementById('searchInput').value;
             if (!query) return;
-
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(query)}&type=video&key=${YOUTUBE_API_KEY}`;
             
             try {
                 const response = await fetch(url);
                 const data = await response.json();
+                
+                if (data.error) {
+                    alert("Error de YouTube: " + data.error.message);
+                    return;
+                }
                 displayResults(data.items);
             } catch (error) {
-                console.error("Error buscando en YouTube:", error);
+                alert("Error al conectar con el servidor de búsqueda.");
             }
         };
 
@@ -142,15 +153,19 @@
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
 
+            if (!videos || videos.length === 0) {
+                resultsDiv.innerHTML = '<p style="text-align:center; color:#c5c6c7;">No se encontraron resultados.</p>';
+                return;
+            }
+
             videos.forEach(video => {
                 const item = document.createElement('div');
-                item.className = 'result-item';
-                
+                item.className = 'card';
                 item.innerHTML = `
-                    <img class="thumbnail" src="${video.snippet.thumbnails.medium.url}" alt="Miniatura">
-                    <div class="info">
-                        <div class="title">${video.snippet.title}</div>
-                        <button class="add-btn" onclick="addToQueue('${video.id.videoId}', '${video.snippet.title.replace(/'/g, "\\'")}')">
+                    <img class="thumb" src="${video.snippet.thumbnails.medium.url}" alt="Miniatura">
+                    <div class="card-info">
+                        <div class="card-title">${video.snippet.title}</div>
+                        <button class="btn-add" onclick="addToQueue('${video.id.videoId}', '${video.snippet.title.replace(/'/g, "\\'")}')">
                             + Agregar a la fila
                         </button>
                     </div>
@@ -159,15 +174,15 @@
             });
         }
 
-        window.addToQueue = function(videoId, title) {
-            const queueRef = ref(db, 'cola_reproduccion');
-            push(queueRef, {
-                videoId: videoId,
-                title: title,
-                timestamp: Date.now()
-            }).then(() => {
-                alert("¡Canción agregada a la fila!");
-            });
+        window.addToQueue = async function(videoId, title) {
+            const { error } = await supabase.from('cola_reproduccion').insert([{ video_id: videoId, title: title }]);
+            if (error) {
+                alert("Error al agregar: " + error.message);
+            } else {
+                alert("¡Canción agregada a la lista de la pantalla!");
+                document.getElementById('searchInput').value = '';
+                document.getElementById('results').innerHTML = '';
+            }
         };
     </script>
 </body>
