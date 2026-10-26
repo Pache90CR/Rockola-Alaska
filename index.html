@@ -16,20 +16,20 @@
 <style>
 /* ===== Tokens: "Alaska Logo" ===== */
 :root {
-  --bg: #EAE6DB;        /* fondo: beige texturizado del logo */
-  --panel: #F2EFE8;     /* paneles: beige más limpio */
-  --raise: #DFDACD;     /* chips, campos de búsqueda */
-  --raise-2: #D1CBB9;   /* hover */
+  --bg: #EAE6DB;        
+  --panel: #F2EFE8;     
+  --raise: #DFDACD;     
+  --raise-2: #D1CBB9;   
   --line: rgba(22, 38, 76, .12);
   --line-2: rgba(22, 38, 76, .24);
-  --text: #16264C;      /* azul marino intenso de la montaña y texto */
-  --muted: #5C6A8A;     /* texto secundario */
+  --text: #16264C;      
+  --muted: #5C6A8A;     
   --faint: #929EBA;
-  --ice: #16264C;       /* acción principal: azul marino */
-  --ice-ink: #EAE6DB;   /* texto sobre el botón: beige */
-  --violet: #2D437A;    /* acentos de aurora */
-  --amber: #D97706;     /* favoritos: dorado oscuro */
-  --coral: #DC2626;     /* errores y quitar */
+  --ice: #16264C;       
+  --ice-ink: #EAE6DB;   
+  --violet: #2D437A;    
+  --amber: #D97706;     
+  --coral: #DC2626;     
   --r-s: 8px; --r-m: 12px; --r-l: 18px;
   --font-ui: 'Figtree', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-display: 'Unbounded', 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -1012,37 +1012,96 @@ let gateT = null, wakeLock = null, seeking = false;
 
 const paintRange = el => el.style.setProperty('--p', ((el.value - el.min) / (el.max - el.min) * 100) + '%');
 
+/* 
+ * CARGA Y POLLEO ROBUSTO DE LA API DE YOUTUBE 
+ * Soluciona las condiciones de carrera y la inicialización silenciosa bloqueada en móviles.
+ */
 function loadYT() {
+  if (S.role !== 'player') return;
   if (S.yt) return;
-  if (window.YT && YT.Player) { createPlayer(); return; }
-  if (loadYT.loading) return;
+
+  // Si el objeto YT ya fue cargado por completo previamente
+  if (window.YT && window.YT.Player) { 
+    createPlayer(); 
+    return; 
+  }
+
+  // Si ya pedimos el script y seguimos esperando
+  if (loadYT.loading) {
+    let wChecks = 0;
+    const wPoll = setInterval(() => {
+      wChecks++;
+      if (window.YT && window.YT.Player) {
+        clearInterval(wPoll);
+        if (!S.yt) createPlayer();
+      }
+      if (wChecks > 40) clearInterval(wPoll);
+    }, 250);
+    return;
+  }
+
   loadYT.loading = true;
-  window.onYouTubeIframeAPIReady = createPlayer;
+  window.onYouTubeIframeAPIReady = () => { createPlayer(); };
+
   const s = document.createElement('script');
-  s.src = 'https://www.youtube.com/iframe_api'; s.async = true;
+  s.src = 'https://www.youtube.com/iframe_api'; 
+  s.async = true;
   s.onerror = () => { loadYT.loading = false; toast('No se pudo cargar YouTube. Revisa la conexión.', true); };
   document.head.appendChild(s);
 }
 
 function createPlayer() {
   if (S.role !== 'player' || S.yt) return;
-  const vars = { autoplay: 1, controls: 0, disablekb: 1, fs: 0, iv_load_policy: 3, modestbranding: 1, playsinline: 1, rel: 0 };
+  
+  // Cambiamos autoplay: 1 a autoplay: 0 para evitar que los móviles bloqueen
+  // silenciosamente la inicialización del Iframe por completo.
+  const vars = { autoplay: 0, controls: 0, disablekb: 1, fs: 0, iv_load_policy: 3, modestbranding: 1, playsinline: 1, rel: 0 };
   if (/^https?:$/.test(location.protocol)) vars.origin = location.origin;
+  
   S.ytReady = false;
-  S.yt = new YT.Player('player', {
-    width: '100%', height: '100%', playerVars: vars,
-    events: { onReady: onYTReady, onStateChange: onYTState, onError: onYTError }
-  });
+  
+  try {
+    S.yt = new YT.Player('player', {
+      width: '100%', height: '100%', playerVars: vars,
+      events: { onReady: onYTReady, onStateChange: onYTState, onError: onYTError }
+    });
+    
+    // FALLBACK: A veces Android/Chrome no dispara 'onReady' jamás a pesar de 
+    // estar completamente listo. Esto verifica sus tripas para forzar el evento.
+    let checks = 0;
+    const readyPoll = setInterval(() => {
+      checks++;
+      if (S.ytReady) { clearInterval(readyPoll); return; }
+      if (S.yt && typeof S.yt.getPlayerState === 'function') {
+        clearInterval(readyPoll);
+        onYTReady(); 
+      }
+      if (checks > 40) clearInterval(readyPoll); // Desiste tras 10 segundos
+    }, 250);
+    
+  } catch (e) {
+    toast('Hubo un error cargando el reproductor.', true);
+  }
 }
 
 function destroyPlayer() {
   clearTimeout(gateT); setPlaying(false);
   try { if (S.yt && S.yt.destroy) S.yt.destroy(); } catch (e) { }
   S.yt = null; S.ytReady = false; S.currentId = null;
+  
   const box = $('#playerBox');
-  const iframe = box.querySelector('iframe');
-  if (iframe) iframe.remove();
-  if (!$('#player')) { const d = document.createElement('div'); d.id = 'player'; box.insertBefore(d, box.firstChild); }
+  if (!box) return;
+  
+  // Limpieza total del contenedor anterior
+  const old = $('#player');
+  if (old) old.remove();
+  const iframes = box.querySelectorAll('iframe');
+  iframes.forEach(ifr => ifr.remove());
+  
+  const d = document.createElement('div');
+  d.id = 'player';
+  box.insertBefore(d, box.firstChild);
+  
   $('#gate').hidden = true; $('#idle').hidden = false;
 }
 
@@ -1151,7 +1210,12 @@ function skipSong() {
 function playNow(rowId) {
   const row = S.queue.find(r => r.id === rowId);
   if (!row || rowId === S.currentId) return;
-  if (!S.ytReady) { toast('Preparando el reproductor, intenta de nuevo...'); return; }
+  
+  if (!S.ytReady) { 
+      toast('Preparando el reproductor, intenta de nuevo...');
+      loadYT(); // Reintentamos cargar la API por si acaso
+      return; 
+  }
   if (S.currentId) dropRow(S.currentId);
   playRow(row); afterQueue(false);
 }
@@ -1321,9 +1385,9 @@ function setRole(role, persist) {
   $('#roleIcon').setAttribute('href', role === 'player' ? '#i-tv' : '#i-phone');
   if (persist) store.set('alaska_role', role);
 
-  // ARREGLO: Pequeña pausa para asegurar que el navegador dibuja el cambio a "display: block"
-  // antes de inicializar el API de YouTube (evita el congelamiento silencioso del iframe).
-  if (role === 'player') setTimeout(startPlayerMode, 100); 
+  // Aumentamos a 300ms. Es crucial que el contenedor "#playerBox" tenga
+  // dimensiones completas establecidas por el navegador antes de crear el iframe.
+  if (role === 'player') setTimeout(startPlayerMode, 300); 
   else stopPlayerMode();
   
   document.body.classList.toggle('playing', false);
