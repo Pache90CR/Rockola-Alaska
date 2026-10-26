@@ -6,31 +6,53 @@
     <title>Rockola Alaska - Control Remoto</title>
     <style>
         * { box-sizing: border-box; }
-        body { margin: 0; background-color: #0b0c10; color: #ffffff; font-family: sans-serif; padding: 15px; }
-        .header { text-align: center; margin-bottom: 15px; border-bottom: 1px solid #1f2833; padding-bottom: 10px; }
-        .header h1 { color: #66fcf1; font-size: 1.3rem; margin: 0; }
-        .search-box { display: flex; gap: 8px; margin-bottom: 15px; }
-        input[type="text"] { flex: 1; padding: 14px; border-radius: 10px; border: 1px solid #45a29e; background-color: #1f2833; color: white; font-size: 1rem; outline: none; }
-        button { padding: 14px 18px; border-radius: 10px; border: none; background-color: #66fcf1; color: #0b0c10; font-weight: bold; font-size: 1rem; cursor: pointer; }
-        button:active { opacity: 0.8; }
-        #status-msg { margin-bottom: 15px; text-align: center; font-size: 0.9rem; word-break: break-word; }
-        .error-box { color: #ff6b6b; background: #2b1111; padding: 12px; border-radius: 8px; border: 1px solid #ff4444; word-break: break-word; text-align: left; }
-        #results { display: flex; flex-direction: column; gap: 12px; }
-        .card { background-color: #1f2833; border-radius: 10px; padding: 12px; display: flex; gap: 12px; align-items: center; border: 1px solid #2c3846; }
-        .thumb { width: 100px; height: 70px; object-fit: cover; border-radius: 6px; }
-        .card-info { flex: 1; display: flex; flex-direction: column; gap: 6px; }
-        .card-title { font-size: 0.9rem; font-weight: bold; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .btn-add { background: transparent; border: 1.5px solid #66fcf1; color: #66fcf1; padding: 8px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        body { margin: 0; background-color: #0b0c10; color: #ffffff; font-family: sans-serif; padding: 12px; }
+        .header { text-align: center; margin-bottom: 12px; border-bottom: 1px solid #1f2833; padding-bottom: 8px; }
+        .header h1 { color: #66fcf1; font-size: 1.2rem; margin: 0; }
+        
+        /* Buscador */
+        .search-box { display: flex; gap: 8px; margin-bottom: 12px; }
+        input[type="text"] { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #45a29e; background-color: #1f2833; color: white; font-size: 0.95rem; outline: none; }
+        button.btn-search { padding: 12px 16px; border-radius: 10px; border: none; background-color: #66fcf1; color: #0b0c10; font-weight: bold; font-size: 0.95rem; cursor: pointer; }
+
+        /* Categorías / Chips estilo YouTube */
+        .chips-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 10px; scrollbar-width: none; }
+        .chip { background: #1f2833; color: #c5c6c7; padding: 7px 14px; border-radius: 20px; font-size: 0.82rem; font-weight: bold; white-space: nowrap; border: 1px solid #2c3846; cursor: pointer; }
+        .chip.active { background: #66fcf1; color: #0b0c10; border-color: #66fcf1; }
+
+        #status-msg { margin-bottom: 12px; text-align: center; font-size: 0.85rem; }
+        
+        /* Cuadrícula de Tarjetas */
+        #results { display: flex; flex-direction: column; gap: 10px; }
+        .card { background-color: #1f2833; border-radius: 10px; padding: 10px; display: flex; gap: 10px; align-items: center; border: 1px solid #2c3846; }
+        .thumb { width: 90px; height: 65px; object-fit: cover; border-radius: 6px; }
+        .card-info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .card-title { font-size: 0.85rem; font-weight: bold; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-btns { display: flex; gap: 6px; margin-top: 4px; }
+        .btn-add { background: transparent; border: 1.5px solid #66fcf1; color: #66fcf1; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
+        .btn-fav { background: transparent; border: 1px solid #45a29e; color: #66fcf1; padding: 6px 8px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="header"><h1>📱 Control de Música</h1></div>
+    <div class="header">
+        <h1>📱 Rockola Alaska — Control</h1>
+    </div>
 
     <form id="searchForm" class="search-box">
-        <input type="text" id="searchInput" placeholder="Escribe canción o artista..." autocomplete="off">
-        <button type="submit">Buscar</button>
+        <input type="text" id="searchInput" placeholder="Buscar canción o artista..." autocomplete="off">
+        <button type="submit" class="btn-search">Buscar</button>
     </form>
+
+    <!-- Chips de Géneros y Playlists estilo YouTube -->
+    <div class="chips-container">
+        <div class="chip active" onclick="filterGenre('todos', this)">🌐 Inicio</div>
+        <div class="chip" onclick="filterGenre('regional', this)">🌵 Regional Mex</div>
+        <div class="chip" onclick="filterGenre('dembow', this)">🔥 Dembow/Urbano</div>
+        <div class="chip" onclick="filterGenre('toledo', this)">🦁 Toledo/Dancehall</div>
+        <div class="chip" onclick="filterGenre('salsa', this)">💃 Salsa/Bachata</div>
+        <div class="chip" onclick="showFavorites(this)">⭐ Mis Favoritos</div>
+    </div>
 
     <div id="status-msg"></div>
     <div id="results"></div>
@@ -40,22 +62,39 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ';
         const YOUTUBE_API_KEY = "AIzaSyAHKvpCidYJTCFasu0XsQYvCSUwHsWA4mI";
 
+        // Mapeo de canciones rápidas por género del Bar
+        const PRESET_MUSIC = {
+            regional: [
+                { id: "Ya2eGqC_T7w", title: "Grupo Firme - Ya Supérame (Video Oficial)", thumb: "https://i.ytimg.com/vi/Ya2eGqC_T7w/hqdefault.jpg" },
+                { id: "x-X9X4pUaCg", title: "Christian Nodal - Ya No Somos Ni Seremos", thumb: "https://i.ytimg.com/vi/x-X9X4pUaCg/hqdefault.jpg" },
+                { id: "6w472wQ6uK8", title: "Calibre 50 - Si Te Pudiera Mentir", thumb: "https://i.ytimg.com/vi/6w472wQ6uK8/hqdefault.jpg" }
+            ],
+            dembow: [
+                { id: "DJ_Alejandrop", title: "DEMBOW 2026 🔥 El Alfa, Bulin 47, Tokischa MIX", thumb: "https://i.ytimg.com/vi/5qap5aO4i9A/hqdefault.jpg" },
+                { id: "dembow_mix2", title: "El Alfa x Rochy RD - Lo Más Sonado Reggaeton", thumb: "https://i.ytimg.com/vi/3y_8N44UjJ0/hqdefault.jpg" }
+            ],
+            toledo: [
+                { id: "TOLEDO_SHOWTIME", title: "TOLEDO - SHOWTIME (Video Oficial)", thumb: "https://i.ytimg.com/vi/9bZkp7q19f0/hqdefault.jpg" },
+                { id: "toledo_mix", title: "Toledo - El Lirical Exitos Dancehall Costa Rica", thumb: "https://i.ytimg.com/vi/L3wKzy_U9f0/hqdefault.jpg" }
+            ],
+            salsa: [
+                { id: "bachata_mix", title: "Aventura & Romeo Santos - Mix Grandes Éxitos", thumb: "https://i.ytimg.com/vi/8U_N1W99S6k/hqdefault.jpg" },
+                { id: "salsa_mix", title: "Marc Anthony - Salsa Clásica Pa' Bailar", thumb: "https://i.ytimg.com/vi/ZXD3N4P19zY/hqdefault.jpg" }
+            ]
+        };
+
         document.getElementById('searchForm').addEventListener('submit', function(e) {
             e.preventDefault();
             searchYouTube();
         });
 
-        async function searchYouTube() {
-            const query = document.getElementById('searchInput').value.trim();
+        async function searchYouTube(customQuery = null) {
+            const query = customQuery || document.getElementById('searchInput').value.trim();
             const statusDiv = document.getElementById('status-msg');
             const resultsDiv = document.getElementById('results');
 
-            if (!query) {
-                alert("Escribe el nombre de una canción o artista");
-                return;
-            }
+            if (!query) return;
 
-            statusDiv.className = '';
             statusDiv.style.color = '#66fcf1';
             statusDiv.innerHTML = '🔍 Buscando en YouTube...';
             resultsDiv.innerHTML = '';
@@ -65,18 +104,14 @@
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-
-                if (data.error) {
-                    statusDiv.className = 'error-box';
-                    statusDiv.innerHTML = '<b>Error YouTube:</b> ' + data.error.message;
-                    return;
-                }
-
                 statusDiv.innerHTML = '';
-                displayResults(data.items);
+                if (data.items) displayResults(data.items.map(item => ({
+                    id: item.id.videoId,
+                    title: item.snippet.title,
+                    thumb: item.snippet.thumbnails.medium.url
+                })));
             } catch (error) {
-                statusDiv.className = 'error-box';
-                statusDiv.innerHTML = '<b>Error de red YouTube:</b> ' + error.message;
+                statusDiv.innerHTML = '<b style="color:#ff6b6b">Error al buscar. Revisa la red.</b>';
             }
         }
 
@@ -84,41 +119,78 @@
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
 
-            if (!videos || videos.length === 0) {
-                document.getElementById('status-msg').innerHTML = 'No se encontraron videos.';
-                return;
-            }
-
             videos.forEach(video => {
                 const card = document.createElement('div');
                 card.className = 'card';
 
                 const img = document.createElement('img');
                 img.className = 'thumb';
-                img.src = video.snippet.thumbnails.medium.url;
+                img.src = video.thumb;
 
                 const info = document.createElement('div');
                 info.className = 'card-info';
 
                 const title = document.createElement('div');
                 title.className = 'card-title';
-                title.textContent = video.snippet.title;
+                title.textContent = video.title;
+
+                const btns = document.createElement('div');
+                btns.className = 'card-btns';
 
                 const addBtn = document.createElement('button');
                 addBtn.className = 'btn-add';
                 addBtn.textContent = '+ Agregar';
+                addBtn.onclick = () => addToQueue(video.id, video.title, addBtn);
 
-                addBtn.addEventListener('click', function() {
-                    addToQueue(video.id.videoId, video.snippet.title, addBtn);
-                });
+                const favBtn = document.createElement('button');
+                favBtn.className = 'btn-fav';
+                favBtn.textContent = '⭐ Guardar';
+                favBtn.onclick = () => saveFav(video.id, video.title, video.thumb);
 
+                btns.appendChild(addBtn);
+                btns.appendChild(favBtn);
                 info.appendChild(title);
-                info.appendChild(addBtn);
+                info.appendChild(btns);
                 card.appendChild(img);
                 card.appendChild(info);
 
                 resultsDiv.appendChild(card);
             });
+        }
+
+        function filterGenre(genre, element) {
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+
+            if (genre === 'todos') {
+                searchYouTube('Música para Bar Éxitos');
+            } else if (PRESET_MUSIC[genre]) {
+                document.getElementById('status-msg').innerHTML = '';
+                displayResults(PRESET_MUSIC[genre]);
+            }
+        }
+
+        function saveFav(videoId, title, thumb) {
+            let favs = JSON.parse(localStorage.getItem('alaska_favs') || '[]');
+            if (!favs.some(f => f.id === videoId)) {
+                favs.push({ id: videoId, title: title, thumb: thumb });
+                localStorage.setItem('alaska_favs', JSON.stringify(favs));
+                alert("⭐ Canción guardada en Favoritos");
+            } else {
+                alert("Ya está guardada en favoritos");
+            }
+        }
+
+        function showFavorites(element) {
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+            
+            const favs = JSON.parse(localStorage.getItem('alaska_favs') || '[]');
+            if (favs.length === 0) {
+                document.getElementById('results').innerHTML = '<p style="text-align:center; color:#c5c6c7;">No tienes favoritos guardados.</p>';
+            } else {
+                displayResults(favs);
+            }
         }
 
         async function addToQueue(videoId, title, buttonEl) {
@@ -127,7 +199,6 @@
             buttonEl.disabled = true;
 
             const endpoint = `${SUPABASE_URL}/rest/v1/cola_reproduccion`;
-
             try {
                 const response = await fetch(endpoint, {
                     method: 'POST',
@@ -141,22 +212,22 @@
                 });
 
                 if (response.ok) {
-                    alert("¡Canción agregada a la lista de la pantalla!");
-                    document.getElementById('searchInput').value = '';
-                    document.getElementById('results').innerHTML = '';
-                    document.getElementById('status-msg').innerHTML = '';
+                    alert("¡Canción agregada a la pantalla!");
+                    buttonEl.textContent = "✓ Agregada";
                 } else {
-                    const errData = await response.json();
-                    alert("Error Supabase: " + (errData.message || response.statusText));
+                    alert("Error guardando canción.");
                     buttonEl.textContent = originalText;
                     buttonEl.disabled = false;
                 }
             } catch (err) {
-                alert("Error de conexión Supabase: " + err.message);
+                alert("Error de red.");
                 buttonEl.textContent = originalText;
                 buttonEl.disabled = false;
             }
         }
+
+        // Cargar recomendaciones de inicio al abrir
+        filterGenre('todos', document.querySelector('.chip.active'));
     </script>
 </body>
 </html>
