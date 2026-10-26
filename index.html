@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a1016">
+<meta name="color-scheme" content="dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Rockola">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3Cpath id='a' d='M12 12V3M9.6 5.2 12 7.4l2.4-2.2'/%3E%3C/defs%3E%3Crect width='24' height='24' rx='6' fill='%230a1016'/%3E%3Cg fill='none' stroke='%235eead4' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' transform='translate(12 12) scale(.8) translate(-12 -12)'%3E%3Cuse href='%23a'/%3E%3Cuse href='%23a' transform='rotate(60 12 12)'/%3E%3Cuse href='%23a' transform='rotate(120 12 12)'/%3E%3Cuse href='%23a' transform='rotate(180 12 12)'/%3E%3Cuse href='%23a' transform='rotate(240 12 12)'/%3E%3Cuse href='%23a' transform='rotate(300 12 12)'/%3E%3C/g%3E%3C/svg%3E">
+<title>Alaska Rockola</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700&display=swap">
+<style>
+/* ===== Tokens: "Noche polar" ===== */
+:root {
+  --bg: #0a1016;        /* fondo: noche polar */
+  --panel: #0f1820;     /* paneles */
+  --raise: #16222d;     /* chips, campos */
+  --raise-2: #1e2d3a;   /* hover */
+  --line: rgba(170, 205, 225, .12);
+  --line-2: rgba(170, 205, 225, .24);
+  --text: #e9f4f8;      /* hielo */
+  --muted: #8fa5b2;     /* escarcha */
+  --faint: #62767f;
+  --ice: #5eead4;       /* acción principal / sonando */
+  --ice-ink: #052b27;
+  --violet: #8b7bff;    /* solo en la aurora */
+  --amber: #ffc24b;     /* favoritos */
+  --coral: #ff7a7a;     /* errores y quitar */
+  --r-s: 8px; --r-m: 12px; --r-l: 18px;
+  --font-ui: 'Figtree', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Unbounded', 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --side-w: clamp(340px, 28vw, 540px);
+  --nav-h: 3.9rem;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { font-size: clamp(15px, .35vw + 12.5px, 19px); -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: var(--font-ui); font-size: 1rem; line-height: 1.35;
+  overflow: hidden; -webkit-tap-highlight-color: transparent;
+  font-variant-numeric: tabular-nums;
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; border: 0; background: none; padding: 0; touch-action: manipulation; }
+button:disabled { cursor: default; }
+h1, h2, h3, p, ol { margin: 0; padding: 0; }
+ol { list-style: none; }
+img { display: block; max-width: 100%; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--ice); outline-offset: 2px; }
+::selection { background: rgba(94, 234, 212, .3); }
+
+.i { width: 1.5rem; height: 1.5rem; fill: currentColor; flex: none; }
+.i-sm { width: 1.15rem; height: 1.15rem; }
+
+/* ===== Estructura general ===== */
+.app { height: 100vh; height: 100dvh; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
+
+.top {
+  display: grid; align-items: center; gap: .75rem 1rem;
+  grid-template-columns: minmax(max-content, 1fr) minmax(0, 40rem) minmax(max-content, 1fr);
+  padding: .6rem 1.25rem; padding-top: max(.6rem, env(safe-area-inset-top));
+  border-bottom: 1px solid var(--line); background: var(--bg);
+}
+.brand { display: inline-flex; align-items: center; gap: .55rem; color: var(--text); text-decoration: none; min-width: 0; }
+.brand-mark { width: 1.9rem; height: 1.9rem; color: var(--ice); }
+.brand-name { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; letter-spacing: -.01em; }
+.brand-sub { font-weight: 600; font-size: .95rem; color: var(--muted); }
+
+.search {
+  display: flex; align-items: center; height: 2.7rem; min-width: 0;
+  background: var(--raise); border: 1px solid var(--line-2); border-radius: 999px;
+  padding-left: 1rem; transition: border-color .15s, background .15s;
+}
+.search:focus-within { border-color: var(--ice); background: #0d1720; }
+.search > .i { color: var(--muted); }
+.search input {
+  flex: 1; min-width: 0; height: 100%; background: none; border: 0; outline: 0;
+  padding: 0 .6rem; font-size: 1rem;
+}
+.search input::placeholder { color: var(--faint); }
+.search input::-webkit-search-cancel-button { display: none; }
+.icon-btn {
+  width: 2.4rem; height: 2.4rem; border-radius: 50%; display: grid; place-items: center;
+  color: var(--muted); flex: none;
+}
+.icon-btn:hover { background: var(--raise-2); color: var(--text); }
+.search-go {
+  height: 100%; width: 3.4rem; display: grid; place-items: center; flex: none;
+  border-left: 1px solid var(--line-2); border-radius: 0 999px 999px 0; color: var(--text);
+}
+.search-go:hover { background: var(--raise-2); }
+
+.top-right { display: flex; align-items: center; justify-content: flex-end; gap: .6rem; }
+.net { display: inline-flex; align-items: center; gap: .45rem; font-size: .85rem; color: var(--muted); white-space: nowrap; }
+.net .dot { width: .6rem; height: .6rem; border-radius: 50%; background: var(--ice); box-shadow: 0 0 0 3px rgba(94, 234, 212, .18); }
+.net.off { color: var(--coral); }
+.net.off .dot { background: var(--coral); box-shadow: 0 0 0 3px rgba(255, 122, 122, .2); }
+.role-chip {
+  display: inline-flex; align-items: center; gap: .45rem; height: 2.3rem; padding: 0 .9rem 0 .7rem;
+  border-radius: 999px; background: var(--raise); border: 1px solid var(--line-2);
+  font-size: .9rem; font-weight: 600;
+}
+.role-chip:hover { background: var(--raise-2); }
+.role-chip .i { width: 1.2rem; height: 1.2rem; color: var(--ice); }
+
+/* ===== Cuerpo: contenido | video + fila ===== */
+.body {
+  display: grid; min-height: 0;
+  grid-template-columns: minmax(0, 1fr) var(--side-w);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas: "main player" "main queue";
+}
+.main { grid-area: main; min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+.player-card { grid-area: player; }
+.queue { grid-area: queue; }
+
+/* ===== Chips de género ===== */
+.chips-wrap { position: relative; flex: none; padding: .75rem 1.25rem .5rem; border-bottom: 1px solid var(--line); }
+.chips-wrap::before, .chips-wrap::after {
+  content: ""; position: absolute; top: 0; bottom: 1px; width: 3.4rem; pointer-events: none; z-index: 1; opacity: 0; transition: opacity .15s;
+}
+.chips-wrap::before { left: 0; background: linear-gradient(270deg, transparent, var(--bg) 65%); }
+.chips-wrap::after { right: 0; background: linear-gradient(90deg, transparent, var(--bg) 65%); }
+.chips-wrap.fade-l::before, .chips-wrap.fade-r::after { opacity: 1; }
+.chips { position: relative; display: flex; gap: .55rem; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; height: 2.2rem; padding: 0 1rem; border-radius: 999px;
+  background: var(--raise); font-size: .92rem; font-weight: 600; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: .4rem; color: var(--text);
+  transition: background .15s;
+}
+.chip:hover { background: var(--raise-2); }
+.chip[aria-current="true"] { background: var(--text); color: var(--bg); }
+
+/* ===== Vista (rejilla de canciones) ===== */
+.view { flex: 1; min-height: 0; overflow-y: auto; padding: 1.1rem 1.25rem 2rem; overscroll-behavior: contain; }
+.view-head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.view-title { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; letter-spacing: -.01em; }
+.view-sub { color: var(--muted); font-size: .92rem; }
+.link-btn { color: var(--ice); font-weight: 600; font-size: .92rem; padding: .3rem .1rem; }
+.link-btn:hover { text-decoration: underline; }
+.notice {
+  margin-bottom: 1rem; padding: .75rem 1rem; border-radius: var(--r-m);
+  background: rgba(255, 194, 75, .1); border: 1px solid rgba(255, 194, 75, .35); color: #ffe3a6; font-size: .92rem;
+}
+.notice.err { background: rgba(255, 122, 122, .1); border-color: rgba(255, 122, 122, .35); color: #ffc9c9; }
+
+.grid {
+  display: grid; gap: 1.5rem 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(11.5rem, 15vw, 17rem), 1fr));
+}
+.song { min-width: 0; }
+.thumb {
+  position: relative; display: block; width: 100%; padding-top: 56.25%; overflow: hidden;
+  border-radius: var(--r-m); background: linear-gradient(135deg, #17303a, #1b2140);
+}
+.thumb img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+.thumb img.broken { display: none; }
+.song-info { padding-top: .6rem; min-width: 0; }
+.song-title {
+  font-size: 1rem; font-weight: 600; line-height: 1.25;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.song-artist { color: var(--muted); font-size: .88rem; margin-top: .15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.song-acts { display: flex; align-items: center; gap: .5rem; margin-top: .6rem; }
+
+/* Botones */
+.btn {
+  height: 2.4rem; padding: 0 1.1rem; border-radius: 999px; font-weight: 700; font-size: .92rem;
+  display: inline-flex; align-items: center; justify-content: center; gap: .4rem; white-space: nowrap;
+}
+.btn-add { background: var(--ice); color: var(--ice-ink); }
+.btn-add:hover { filter: brightness(1.08); }
+.btn-add:active { transform: scale(.97); }
+.btn-add.busy { opacity: .7; }
+.btn-add.done { background: transparent; color: var(--ice); box-shadow: inset 0 0 0 1.5px rgba(94, 234, 212, .55); }
+.btn-ghost { background: var(--raise); color: var(--text); }
+.btn-ghost:hover { background: var(--raise-2); }
+.btn-more { margin: 1.5rem auto 0; background: var(--raise); padding: 0 1.4rem; }
+.btn-more:hover { background: var(--raise-2); }
+.btn-fav {
+  width: 2.4rem; height: 2.4rem; border-radius: 50%; display: grid; place-items: center;
+  color: var(--muted); background: var(--raise); flex: none;
+}
+.btn-fav:hover { background: var(--raise-2); color: var(--text); }
+.btn-fav[aria-pressed="true"] { color: var(--amber); }
+.more-wrap { display: flex; justify-content: center; }
+
+.empty { padding: 3rem 1rem; text-align: center; color: var(--muted); max-width: 26rem; margin: 0 auto; }
+.empty strong { display: block; color: var(--text); font-size: 1.05rem; margin-bottom: .35rem; }
+
+/* Esqueleto de carga */
+.sk .thumb, .sk .sk-line { background: linear-gradient(90deg, #131f29 25%, #1b2a36 50%, #131f29 75%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+.sk-line { height: .85rem; border-radius: 6px; margin-top: .6rem; }
+.sk-line.s { width: 55%; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+/* ===== Tarjeta del reproductor (columna derecha) ===== */
+.player-card {
+  position: relative; isolation: isolate; overflow: hidden;
+  background: var(--panel); border-left: 1px solid var(--line); padding: 1rem;
+}
+/* Aurora: el único movimiento decorativo; solo aparece cuando suena música */
+.player-card::before {
+  content: ""; position: absolute; z-index: -1; left: -15%; right: -15%; top: -30%; height: 85%;
+  background:
+    radial-gradient(55% 70% at 25% 40%, rgba(94, 234, 212, .30), transparent 70%),
+    radial-gradient(45% 65% at 78% 30%, rgba(139, 123, 255, .26), transparent 70%);
+  opacity: 0; transition: opacity 1s ease; animation: aurora 16s ease-in-out infinite alternate;
+}
+body.playing .player-card::before { opacity: 1; }
+@keyframes aurora {
+  from { transform: translate3d(-5%, 0, 0) scale(1); }
+  to   { transform: translate3d(5%, 6%, 0) scale(1.12); }
+}
+
+.pl-only, .ct-only { display: none; }
+body[data-role="player"] .pl-only { display: block; }
+body[data-role="control"] .ct-only { display: flex; }
+body[data-role="control"] .pl-act { display: none; }
+
+.video { position: relative; width: 100%; padding-top: 56.25%; border-radius: var(--r-m); overflow: hidden; background: #000; }
+.video > * { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.video iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+.shield { z-index: 2; cursor: pointer; }
+.idle {
+  z-index: 1; display: grid; place-content: center; justify-items: center; gap: .4rem; text-align: center; padding: 1rem;
+  color: var(--muted); font-size: .9rem; background: radial-gradient(80% 90% at 50% 0%, #15303a, #0a1218);
+}
+.idle .i { width: 2.4rem; height: 2.4rem; color: var(--ice); opacity: .8; }
+.idle strong { color: var(--text); font-size: 1rem; }
+.gate { z-index: 3; display: grid; place-items: center; background: rgba(5, 10, 14, .8); }
+.gate button {
+  display: inline-flex; align-items: center; gap: .5rem; padding: .85rem 1.3rem; border-radius: 999px;
+  background: var(--ice); color: var(--ice-ink); font-weight: 800;
+}
+
+.np { display: flex; align-items: center; gap: .8rem; margin-top: .85rem; }
+.np-text { flex: 1; min-width: 0; }
+.np-title {
+  font-size: 1.1rem; font-weight: 700; line-height: 1.25;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.np-sub { color: var(--muted); font-size: .88rem; margin-top: .15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.video:fullscreen { padding-top: 0; border-radius: 0; width: 100vw; height: 100vh; }
+.video:-webkit-full-screen { padding-top: 0; border-radius: 0; width: 100vw; height: 100vh; }
+.grid > .empty { grid-column: 1 / -1; }
+.eq { display: flex; align-items: flex-end; gap: 3px; height: 1.3rem; flex: none; }
+.np .eq { opacity: 0; transition: opacity .2s; }
+body.playing .np .eq { opacity: 1; }
+.eq i { width: 3px; height: 100%; border-radius: 2px; background: var(--ice); transform-origin: bottom; transform: scaleY(.28); }
+body.playing .eq i { animation: eq .9s ease-in-out infinite alternate; }
+.eq i:nth-child(2) { animation-duration: .7s !important; animation-delay: -.3s !important; }
+.eq i:nth-child(3) { animation-duration: 1.1s !important; animation-delay: -.6s !important; }
+.eq i:nth-child(4) { animation-duration: .8s !important; animation-delay: -.1s !important; }
+@keyframes eq { from { transform: scaleY(.22); } to { transform: scaleY(1); } }
+
+.seek { display: flex; align-items: center; gap: .6rem; margin-top: .6rem; font-size: .82rem; color: var(--muted); }
+.seek span { min-width: 2.4rem; }
+.seek span:last-child { text-align: right; }
+
+input[type="range"] {
+  -webkit-appearance: none; appearance: none; background: transparent; height: 1.5rem; width: 100%; margin: 0; cursor: pointer; --p: 0%;
+}
+input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--ice) var(--p), rgba(170, 205, 225, .22) var(--p)); }
+input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; background: rgba(170, 205, 225, .22); }
+input[type="range"]::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--ice); }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -5px; border-radius: 50%; background: var(--text); border: 0; }
+input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: var(--text); }
+
+.ctrls { display: flex; align-items: center; justify-content: space-between; gap: .4rem; margin-top: .25rem; }
+.ctrl-group { display: flex; align-items: center; gap: .15rem; }
+.ctrl-group:last-child { flex: 1 1 0; min-width: 0; justify-content: flex-end; }
+.ctl { position: relative; width: 2.4rem; height: 2.4rem; border-radius: 50%; display: grid; place-items: center; color: var(--text); flex: none; }
+.ctl:hover { background: var(--raise-2); }
+.ctl .t10 { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -34%); font-size: .55rem; font-weight: 800; pointer-events: none; }
+.ctl .flip { transform: scaleX(-1); }
+.ctl-play { width: 3rem; height: 3rem; background: var(--text); color: var(--bg); }
+.ctl-play:hover { background: #fff; }
+.ctl-play .i { width: 1.75rem; height: 1.75rem; }
+.vol { display: flex; align-items: center; min-width: 0; }
+.vol input { flex: 0 1 5.5rem; width: 5.5rem; min-width: 2rem; }
+
+/* Tarjeta de "sonando ahora" para el rol Control */
+.ct-only { flex-direction: column; gap: .75rem; }
+.rc-thumb { position: relative; width: 100%; padding-top: 56.25%; border-radius: var(--r-m); overflow: hidden; background: radial-gradient(80% 90% at 50% 0%, #15303a, #0a1218); }
+.rc-thumb img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+.rc-thumb img.broken { display: none; }
+.rc-label { color: var(--ice); font-size: .85rem; font-weight: 700; }
+.rc-title { font-size: 1.1rem; font-weight: 700; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.rc-sub { color: var(--muted); font-size: .88rem; margin-top: .1rem; }
+.rc-switch { align-self: flex-start; }
+
+/* ===== Fila de música ===== */
+.queue {
+  display: flex; flex-direction: column; min-height: 0; background: var(--panel);
+  border-left: 1px solid var(--line); border-top: 1px solid var(--line);
+}
+.q-head { display: flex; align-items: center; justify-content: space-between; padding: .9rem 1rem .5rem 1.1rem; }
+.q-h { font-family: var(--font-display); font-weight: 600; font-size: .95rem; letter-spacing: -.01em; }
+.q-count { min-width: 1.8rem; height: 1.5rem; padding: 0 .55rem; border-radius: 999px; background: var(--raise); color: var(--muted); font-size: .8rem; font-weight: 700; display: grid; place-items: center; }
+.q-list { flex: 1; min-height: 0; overflow-y: auto; padding: 0 .5rem .75rem; overscroll-behavior: contain; }
+.q-row {
+  display: grid; grid-template-columns: 1.6rem 4.8rem minmax(0, 1fr) auto; align-items: center; gap: .6rem;
+  padding: .45rem .5rem; border-radius: var(--r-m);
+}
+.q-row:hover { background: var(--raise); }
+.q-row.now { background: linear-gradient(90deg, rgba(94, 234, 212, .16), rgba(94, 234, 212, .03)); }
+.q-idx { display: grid; place-items: center; color: var(--muted); font-size: .85rem; font-weight: 700; }
+.q-idx .eq { height: 1rem; }
+.q-thumb { position: relative; padding-top: 56.25%; border-radius: var(--r-s); overflow: hidden; background: linear-gradient(135deg, #17303a, #1b2140); }
+.q-thumb img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+.q-thumb img.broken { display: none; }
+.q-t { font-size: .92rem; font-weight: 600; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word; }
+.q-s { font-size: .78rem; color: var(--muted); margin-top: .15rem; }
+.q-row.now .q-s { color: var(--ice); font-weight: 600; }
+.q-acts { display: flex; gap: .05rem; }
+.q-btn { width: 2.2rem; height: 2.2rem; border-radius: 50%; display: grid; place-items: center; color: var(--muted); }
+.q-btn:hover { background: var(--raise-2); color: var(--text); }
+.q-btn.rm:hover { color: var(--coral); }
+.q-btn.fav[aria-pressed="true"] { color: var(--amber); }
+body[data-role="player"] .q-thumb, body[data-role="player"] .q-text { cursor: pointer; }   /* como antes: tocar una canción de la fila la reproduce */
+.q-btn .i { width: 1.25rem; height: 1.25rem; }
+
+/* ===== Barra inferior (solo móvil/tablet vertical) ===== */
+.tabbar {
+  display: none; grid-template-columns: repeat(3, 1fr); background: var(--bg); border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.tab { position: relative; height: var(--nav-h); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .15rem; font-size: .76rem; font-weight: 600; color: var(--muted); }
+.tab[aria-current="page"] { color: var(--ice); }
+.tab .badge {
+  position: absolute; top: .5rem; left: calc(50% + .55rem); min-width: 1.15rem; height: 1.15rem; padding: 0 .3rem; border-radius: 999px;
+  background: var(--ice); color: var(--ice-ink); font-size: .68rem; font-weight: 800; display: grid; place-items: center;
+}
+
+/* ===== Avisos y ventana de ajustes ===== */
+.toast {
+  position: fixed; left: 50%; bottom: 1.5rem; transform: translate(-50%, 1rem); z-index: 80;
+  max-width: min(92vw, 28rem); padding: .75rem 1.1rem; border-radius: var(--r-m);
+  background: var(--text); color: var(--bg); font-weight: 600; font-size: .92rem;
+  opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast.err { background: var(--coral); color: #2a0707; }
+
+.sheet { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 70; display: grid; place-items: center; background: rgba(3, 7, 10, .72); padding: 1rem; }
+.sheet-panel { width: min(100%, 30rem); max-height: 92vh; max-height: 92dvh; overflow: auto; background: var(--panel); border: 1px solid var(--line-2); border-radius: var(--r-l); padding: 1.25rem; }
+.sheet h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; letter-spacing: -.01em; margin-bottom: .35rem; }
+.sheet .help { color: var(--muted); font-size: .9rem; margin-bottom: 1rem; }
+.opt {
+  display: flex; gap: .8rem; align-items: flex-start; width: 100%; text-align: left; padding: .9rem; margin-bottom: .6rem;
+  border-radius: var(--r-m); background: var(--raise); border: 1.5px solid transparent;
+}
+.opt:hover { background: var(--raise-2); }
+.opt[aria-checked="true"] { border-color: var(--ice); background: rgba(94, 234, 212, .08); }
+.opt .i { color: var(--ice); margin-top: .1rem; }
+.opt strong { display: block; font-size: 1rem; }
+.opt span { color: var(--muted); font-size: .88rem; }
+.sheet-foot { display: flex; gap: .6rem; justify-content: flex-end; flex-wrap: wrap; margin-top: 1rem; }
+.verify-out { margin-top: .8rem; font-size: .85rem; color: var(--muted); max-height: 10rem; overflow: auto; }
+.verify-out b { color: var(--coral); }
+
+/* Estado de red: en pantallas medianas queda solo el punto (si falla, vuelve a aparecer el texto) */
+@media (max-width: 1099px) {
+  .net:not(.off) #netText { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+
+/* Laptop y tablet horizontal: la fila vive en la columna derecha (angosta): el número va sobre la miniatura */
+@media (min-width: 900px) {
+  .q-row { grid-template-columns: 4.3rem minmax(0, 1fr) auto; gap: .5rem; padding: .4rem .35rem; }
+  .q-btn { width: 2rem; height: 2rem; }
+  .q-btn .i { width: 1.15rem; height: 1.15rem; }
+  .q-idx, .q-thumb { grid-column: 1; grid-row: 1; }
+  .q-text { grid-column: 2; grid-row: 1; }
+  .q-acts { grid-column: 3; grid-row: 1; }
+  .q-idx {
+    align-self: start; justify-self: start; z-index: 1; margin: .22rem; min-width: 1.2rem; height: 1.2rem; padding: 0 .28rem;
+    border-radius: 5px; background: rgba(5, 10, 14, .78); color: var(--text); font-size: .7rem;
+  }
+  .q-idx .eq { height: .75rem; }
+}
+
+/* ===== Tablet vertical y celular: una columna + barra inferior ===== */
+@media (max-width: 899px), (orientation: landscape) and (max-height: 520px) {
+  :root { --side-w: 100%; }
+  .top {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "brand right" "search search";
+    padding: .55rem 1rem .65rem; gap: .55rem .75rem;
+  }
+  .brand { grid-area: brand; }
+  .top-right { grid-area: right; }
+  .search { grid-area: search; }
+
+  .body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas: "player" "main";
+  }
+  .queue { grid-area: main; border-left: 0; border-top: 0; }
+  body[data-tab="queue"] .main { display: none; }
+  body:not([data-tab="queue"]) .queue { display: none; }
+  .player-card { border-left: 0; border-bottom: 1px solid var(--line); padding: .75rem 1rem; }
+  .tabbar { display: grid; }
+  .chip-fav, .rc-switch, .vol input { display: none; }
+  .chips-wrap { padding: .6rem 1rem .45rem; }
+  .view { padding: 1rem 1rem 1.5rem; }
+  .toast { bottom: calc(var(--nav-h) + 1rem + env(safe-area-inset-bottom)); }
+  .q-btn { width: 2.6rem; height: 2.6rem; }
+
+  /* Rol Control: tarjeta compacta en una fila */
+  .ct-only { flex-direction: row; align-items: center; gap: .8rem; }
+  .rc-thumb { flex: none; width: 6rem; height: 3.375rem; padding-top: 0; }
+  .rc-text { min-width: 0; }
+  .rc-title { font-size: 1rem; -webkit-line-clamp: 1; }
+
+  /* Rol Reproductor en pantallas medianas: video a la izquierda, datos a la derecha */
+  body[data-role="player"] .pl-only { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 0 1rem; align-items: start; }
+  body[data-role="player"] .pl-only .stage { grid-row: 1 / span 3; }
+  body[data-role="player"] .np { margin-top: 0; }
+}
+
+/* ===== Celular ===== */
+@media (max-width: 639px) {
+  .brand-sub { display: none; }
+  .grid { grid-template-columns: 1fr; gap: 1.1rem; }
+  .song { display: grid; grid-template-columns: minmax(0, 40%) minmax(0, 1fr); gap: .8rem; align-items: start; }
+  .song-info { padding-top: 0; }
+  .song-acts { margin-top: .5rem; }
+  .q-row { grid-template-columns: 1.3rem 4.2rem minmax(0, 1fr) auto; gap: .5rem; }
+  /* Reproductor en celular: video a todo el ancho (YouTube pide mínimo ~200 px) */
+  body[data-role="player"] .pl-only { display: block; }
+  body[data-role="player"] .np { margin-top: .7rem; }
+}
+
+/* ===== Celular horizontal (poca altura): video al lado de la lista ===== */
+@media (orientation: landscape) and (max-height: 520px) {
+  .top { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "brand search right"; padding: .4rem 1rem; }
+  .brand-sub { display: none; }
+  .body { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-rows: minmax(0, 1fr); grid-template-areas: "player main"; }
+  .queue { grid-area: main; }
+  .player-card { overflow-y: auto; border-bottom: 0; border-right: 1px solid var(--line); }
+  body[data-role="player"] .pl-only { display: block; }
+  /* El video se achica según la altura disponible para que quepan los controles */
+  body[data-role="player"] .stage { max-width: calc((100vh - 15.5rem) * 16 / 9); max-width: calc((100dvh - 15.5rem) * 16 / 9); margin-inline: auto; }
+  body[data-role="player"] .np { margin-top: .5rem; }
+  .np-title { font-size: 1rem; -webkit-line-clamp: 1; }
+  .seek { margin-top: .3rem; }
+  .ctrls { margin-top: 0; }
+  .ctl { width: 2.3rem; height: 2.3rem; }
+  .ctl-play { width: 2.8rem; height: 2.8rem; }
+  .chips-wrap { padding: .4rem 1rem; }
+  .tab { height: 3rem; flex-direction: row; gap: .4rem; }
+  .tab .badge { position: static; }
+  :root { --nav-h: 3rem; }
+}
+
+/* ===== Pantallas de TV / muy grandes ===== */
+@media (min-width: 1700px) {
+  .grid { grid-template-columns: repeat(auto-fill, minmax(14.5rem, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+</style>
+</head>
+<body data-role="control" data-tab="home">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <path id="snow-arm" d="M12 12V3M9.6 5.2 12 7.4l2.4-2.2"/>
+    <symbol id="i-snow" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <use href="#snow-arm"/><use href="#snow-arm" transform="rotate(60 12 12)"/><use href="#snow-arm" transform="rotate(120 12 12)"/>
+      <use href="#snow-arm" transform="rotate(180 12 12)"/><use href="#snow-arm" transform="rotate(240 12 12)"/><use href="#snow-arm" transform="rotate(300 12 12)"/></g></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></symbol>
+    <symbol id="i-replay" viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></symbol>
+    <symbol id="i-vol" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></symbol>
+    <symbol id="i-mute" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></symbol>
+    <symbol id="i-full" viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></symbol>
+    <symbol id="i-star-o" viewBox="0 0 24 24"><path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></symbol>
+    <symbol id="i-queue" viewBox="0 0 24 24"><path d="M15 6H3v2h12V6zm0 4H3v2h12v-2zM3 16h8v-2H3v2zM17 6v8.18c-.31-.11-.65-.18-1-.18-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3V8h3V6h-5z"/></symbol>
+    <symbol id="i-tv" viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></symbol>
+  </defs>
+</svg>
+
+<div class="app">
+  <header class="top">
+    <a class="brand" href="./" aria-label="Bar Restaurante Alaska, Rockola. Ir al inicio">
+      <svg class="i brand-mark" aria-hidden="true"><use href="#i-snow"/></svg>
+      <span class="brand-name">Alaska</span><span class="brand-sub">Rockola</span>
+    </a>
+
+    <form class="search" id="searchForm" role="search" autocomplete="off">
+      <svg class="i i-sm" aria-hidden="true"><use href="#i-search"/></svg>
+      <input id="searchInput" type="search" placeholder="Buscar canción o artista" enterkeyhint="search" aria-label="Buscar canción o artista" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <button type="button" class="icon-btn" id="searchClear" aria-label="Borrar búsqueda" hidden><svg class="i i-sm" aria-hidden="true"><use href="#i-close"/></svg></button>
+      <button type="submit" class="search-go" aria-label="Buscar"><svg class="i" aria-hidden="true"><use href="#i-search"/></svg></button>
+    </form>
+
+    <div class="top-right">
+      <span class="net" id="netStatus" role="status"><i class="dot"></i><span id="netText">En línea</span></span>
+      <button type="button" class="role-chip" id="roleBtn" aria-haspopup="dialog" aria-label="Cambiar el modo de este dispositivo">
+        <svg class="i" aria-hidden="true"><use id="roleIcon" href="#i-phone"/></svg><span id="roleText">Control</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="body">
+    <main class="main" id="main">
+      <div class="chips-wrap"><nav class="chips" id="chips" aria-label="Géneros"></nav></div>
+      <div class="view" id="view">
+        <div class="view-head">
+          <h1 class="view-title" id="viewTitle">Inicio</h1>
+          <span class="view-sub" id="viewSub"></span>
+          <button type="button" class="link-btn" id="viewBack" hidden>Volver al inicio</button>
+        </div>
+        <div class="notice" id="notice" hidden></div>
+        <div class="grid" id="grid" aria-live="polite"></div>
+        <div class="more-wrap" id="moreWrap"></div>
+      </div>
+    </main>
+
+    <section class="player-card" id="playerCard" aria-label="Reproductor">
+      <!-- Rol Reproductor: este dispositivo suena y administra la fila -->
+      <div class="pl-only">
+        <div class="stage">
+          <div class="video" id="playerBox">
+            <div id="player"></div>
+            <div class="idle" id="idle">
+              <svg class="i" aria-hidden="true"><use href="#i-note"/></svg>
+              <strong>Nada suena todavía</strong>
+              <span>Agrega canciones a la fila</span>
+            </div>
+            <div class="shield" id="shield"></div>
+            <div class="gate" id="gate" hidden><button type="button" id="gateBtn"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Tocar para activar el sonido</button></div>
+          </div>
+        </div>
+        <div class="np">
+          <div class="np-text"><p class="np-title" id="npTitle">Nada suena todavía</p><p class="np-sub" id="npSub">La fila está vacía</p></div>
+          <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="seek">
+          <span id="curTime">0:00</span>
+          <input type="range" id="seek" min="0" max="1000" value="0" aria-label="Posición de la canción">
+          <span id="totTime">0:00</span>
+        </div>
+        <div class="ctrls">
+          <div class="ctrl-group">
+            <button type="button" class="ctl" id="btnBack" aria-label="Retroceder 10 segundos"><svg class="i" aria-hidden="true"><use href="#i-replay"/></svg><span class="t10">10</span></button>
+            <button type="button" class="ctl ctl-play" id="btnPlay" aria-label="Reproducir"><svg class="i" aria-hidden="true"><use id="playIcon" href="#i-play"/></svg></button>
+            <button type="button" class="ctl" id="btnFwd" aria-label="Adelantar 10 segundos"><svg class="i flip" aria-hidden="true"><use href="#i-replay"/></svg><span class="t10">10</span></button>
+            <button type="button" class="ctl" id="btnNext" aria-label="Saltar a la siguiente canción"><svg class="i" aria-hidden="true"><use href="#i-next"/></svg></button>
+          </div>
+          <div class="ctrl-group">
+            <div class="vol">
+              <button type="button" class="ctl" id="btnMute" aria-label="Silenciar"><svg class="i" aria-hidden="true"><use id="volIcon" href="#i-vol"/></svg></button>
+              <input type="range" id="vol" min="0" max="100" value="100" aria-label="Volumen">
+            </div>
+            <button type="button" class="ctl" id="btnFull" aria-label="Pantalla completa"><svg class="i" aria-hidden="true"><use href="#i-full"/></svg></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rol Control: muestra qué suena y deja agregar canciones -->
+      <div class="ct-only">
+        <div class="rc-thumb"><img id="rcThumb" alt="" hidden></div>
+        <div class="rc-text">
+          <p class="rc-label" id="rcLabel">Fila vacía</p>
+          <p class="rc-title" id="rcTitle">Agrega la primera canción</p>
+          <p class="rc-sub" id="rcSub"></p>
+          <button type="button" class="link-btn rc-switch" id="rcSwitch">Usar este dispositivo como reproductor</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="queue" id="queue" aria-label="Fila de música">
+      <div class="q-head"><h2 class="q-h">Fila de música</h2><span class="q-count" id="qCount">0</span></div>
+      <ol class="q-list" id="qList"></ol>
+    </section>
+  </div>
+
+  <nav class="tabbar" id="tabbar" aria-label="Secciones">
+    <button type="button" class="tab" data-tab="home" aria-current="page"><svg class="i" aria-hidden="true"><use href="#i-home"/></svg>Inicio</button>
+    <button type="button" class="tab" data-tab="queue"><svg class="i" aria-hidden="true"><use href="#i-queue"/></svg>Fila<span class="badge" id="tabBadge" hidden>0</span></button>
+    <button type="button" class="tab" data-tab="favs"><svg class="i" aria-hidden="true"><use href="#i-star-o"/></svg>Favoritos</button>
+  </nav>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <h2 id="sheetTitle">Este dispositivo</h2>
+    <p class="help">Elige qué hace este aparato. Solo uno debería ser el reproductor: el que suena en el bar.</p>
+    <button type="button" class="opt" id="optControl" role="radio" aria-checked="true">
+      <svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>
+      <div><strong>Control remoto</strong><span>Busca y agrega canciones. No reproduce ni quita nada de la fila.</span></div>
+    </button>
+    <button type="button" class="opt" id="optPlayer" role="radio" aria-checked="false">
+      <svg class="i" aria-hidden="true"><use href="#i-tv"/></svg>
+      <div><strong>Reproductor</strong><span>Reproduce la fila y quita cada canción al terminar. Úsalo en la compu o la TV del bar.</span></div>
+    </button>
+    <div class="verify-out" id="verifyOut" hidden></div>
+    <div class="sheet-foot">
+      <button type="button" class="btn btn-ghost" id="btnVerify">Revisar catálogo</button>
+      <button type="button" class="btn btn-add" id="sheetClose">Listo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* =====================================================================
+   CATÁLOGO PREDETERMINADO (no usa la API de YouTube → no gasta cuota)
+   Cada canción: [idDeYouTube, 'Título', 'Artista']
+   Para cambiar una canción, reemplaza el ID de 11 caracteres
+   (lo que va después de "v=" en la URL del video de YouTube).
+   ===================================================================== */
+const CATS = [
+  {
+    key: 'inicio', emoji: '🌐', label: 'Inicio',
+    // Consulta original de cada género: se usa solo al tocar "Buscar más en YouTube" (gasta cuota de la API)
+    q: 'Música variada para bares 2026 éxitos',
+    songs: [] // se arma abajo mezclando las demás categorías
+  },
+  {
+    key: 'regional', emoji: '🌵', label: 'Regional Mex',
+    q: 'Mix regional mexicano, banda y corridos',
+    tags: 'regional mexicano mexico corridos banda norteño ranchera',
+    songs: [
+      ['lZiaYpD9ZrI', 'Ella Baila Sola', 'Eslabon Armado, Peso Pluma'],
+      ['bFbZNgYDd2U', 'un x100to', 'Grupo Frontera, Bad Bunny'],
+      ['pviceZ-uOzg', 'Bebe Dame', 'Fuerza Regida, Grupo Frontera'],
+      ['jhMiIUb2GEA', 'Primera Cita', 'Carin León'],
+      ['ETLoTxVVvjM', 'Adiós Amor', 'Christian Nodal'],
+      ['1fa_npv6y9I', 'El Azul', 'Junior H, Peso Pluma'],
+      ['DWRj2BB8YHs', 'AMG', 'Natanael Cano, Gabito Ballesteros, Peso Pluma'],
+      ['rryDND06LHU', 'La Puerta Negra', 'Los Tigres del Norte'],
+      ['9jsb8JVxJwY', 'El Rey', 'Vicente Fernández'],
+      ['05dcxPp62BQ', 'Me Dediqué a Perderte', 'Alejandro Fernández'],
+      ['fJ8OYgA6kGM', 'Nieves de Enero', 'Chalino Sánchez'],
+      ['Y9Dj3kxmiXk', '¿Y Todo Para Qué?', 'Intocable'],
+      ['q1_Wa5yRXLM', 'Si No Te Hubieras Ido', 'Marco Antonio Solís'],
+      ['ZcvDJ-RvK3s', 'Y Llegaste Tú', 'Banda El Recodo']
+    ]
+  },
+  {
+    key: 'urbano', emoji: '🔥', label: 'Dembow/Urbano',
+    q: 'Mix dembow, reggaeton, fiesta urbana',
+    tags: 'dembow reggaeton urbano perreo trap latino',
+    songs: [
+      ['Cr8K88UcO0s', 'Tití Me Preguntó', 'Bad Bunny'],
+      ['_PJvpq8uOZM', 'Monaco', 'Bad Bunny'],
+      ['eUZmkCEgI2E', 'Provenza', 'Karol G'],
+      ['oD5f55ohsc4', 'Normal', 'Feid'],
+      ['CCF1_jI8Prk', 'Gasolina', 'Daddy Yankee'],
+      ['sGIm0-dQd8M', 'Dura', 'Daddy Yankee'],
+      ['7zp1TbLFPp8', 'Danza Kuduro', 'Don Omar, Lucenzo'],
+      ['32F2d-wj4Xw', 'Baila Baila Baila', 'Ozuna'],
+      ['CFPLIaMpGrY', 'Todo de Ti', 'Rauw Alejandro'],
+      ['eqhhFNMC7uE', 'Secreto', 'Anuel AA, Karol G'],
+      ['A_g3lMcWVy0', 'Bzrp Music Sessions, Vol. 52', 'Quevedo, Bizarrap'],
+      ['7IO7dX8AV5A', 'Bzrp Music Sessions, Vol. 53', 'Shakira, Bizarrap'],
+      ['JaK0FOPVHrk', 'La Mamá de la Mamá', 'El Alfa, CJ, El Cherry Scom']
+    ]
+  },
+  {
+    key: 'toledo', emoji: '🦁', label: 'Toledo/Dancehall',
+    q: 'Toledo dancehall Costa Rica',
+    tags: 'toledo dancehall dance hall reggae costa rica tico',
+    songs: [
+      ['SP3twVkwrBM', 'Dancehall', 'Toledo'],
+      ['DRSvylpQ7Bg', 'Showtime', 'Toledo'],
+      ['d4bzzXJmSxU', 'Full of Vibes', 'Toledo, Tapon, DjP'],
+      ['4XZEqDX451Y', 'Gracias', 'Toledo'],
+      ['znLlx35tUhI', 'El Sarpe', 'Toledo'],
+      ['dW2MmuA1nI4', 'Temperature', 'Sean Paul'],
+      ['HbSJdziD1aU', 'Boombastic', 'Shaggy'],
+      ['p8HoEvDh70Y', 'Toast', 'Koffee'],
+      ['OSpIw4768H0', 'Murder She Wrote', 'Chaka Demus & Pliers']
+    ]
+  },
+  {
+    key: 'salsa', emoji: '💃', label: 'Salsa/Bachata',
+    q: 'Mix salsa y bachata bailable',
+    tags: 'salsa bachata bailable merengue tropical caribe',
+    songs: [
+      ['YXnjy5YlDwk', 'Vivir Mi Vida', 'Marc Anthony'],
+      ['hM8EHtN9RMw', 'Valió la Pena', 'Marc Anthony'],
+      ['QFs3PIZb3js', 'Propuesta Indecente', 'Romeo Santos'],
+      ['bdOXnTbyk0g', 'Darte un Beso', 'Prince Royce'],
+      ['yC9u00F-NF0', 'Obsesión', 'Aventura'],
+      ['ohumtiwSo9E', 'Hasta el Fin', 'Monchy & Alexandra'],
+      ['Hct_iDOt4D0', 'Bachata Rosa', 'Juan Luis Guerra 4.40'],
+      ['WPiEbYSF9kE', 'Suavemente', 'Elvis Crespo'],
+      ['0nBFWzpWXuM', 'La Vida Es Un Carnaval', 'Celia Cruz'],
+      ['7KxkMLAZlzw', 'Cali Pachanguero', 'Grupo Niche'],
+      ['W8PTWqE2SVw', 'La Rebelión', 'Joe Arroyo'],
+      ['7kbjKCj-rMQ', 'Conciencia', 'Gilberto Santa Rosa'],
+      ['KfjB690ZTD4', 'El Cantante', 'Héctor Lavoe'],
+      ['41DPpQy8_QE', 'Llorarás', 'Oscar D\'León']
+    ]
+  }
+];
+
+// Canciones extra solo para "Inicio" (pop y rock en español)
+const EXTRAS_INICIO = [
+  ['kJQP7kiw5Fk', 'Despacito', 'Luis Fonsi, Daddy Yankee'],
+  ['8lbsQyMhMT8', 'Rayando el Sol', 'Maná'],
+  ['ie-jNqM3J4A', 'De Música Ligera', 'Soda Stereo']
+];
+
+// Orden de "Inicio": se intercalan los géneros para que siempre se vea variado
+const INICIO_ORDEN = [
+  'Cr8K88UcO0s', 'lZiaYpD9ZrI', 'YXnjy5YlDwk', 'SP3twVkwrBM', 'kJQP7kiw5Fk', '_PJvpq8uOZM',
+  'bFbZNgYDd2U', 'QFs3PIZb3js', 'dW2MmuA1nI4', '8lbsQyMhMT8', 'CCF1_jI8Prk', 'pviceZ-uOzg',
+  'yC9u00F-NF0', 'DRSvylpQ7Bg', 'ie-jNqM3J4A', '7zp1TbLFPp8', 'jhMiIUb2GEA', '0nBFWzpWXuM',
+  'HbSJdziD1aU', '32F2d-wj4Xw', 'ETLoTxVVvjM', 'WPiEbYSF9kE', '7IO7dX8AV5A', 'eUZmkCEgI2E'
+];
+
+(function armarCatalogo() {
+  const porId = {};
+  CATS.forEach(c => c.songs.forEach(s => { porId[s[0]] = s; }));
+  EXTRAS_INICIO.forEach(s => { porId[s[0]] = s; });
+  CATS[0].songs = INICIO_ORDEN.map(id => porId[id]).filter(Boolean);
+  // Normaliza a objetos { id, title, artist }
+  CATS.forEach(c => { c.songs = c.songs.map(s => ({ id: s[0], title: s[1], artist: s[2] })); });
+})();
+
+
+/* =====================================================================
+   ALASKA ROCKOLA · una sola página para el reproductor y el control
+   · Control (por defecto): busca y agrega canciones a la fila. No reproduce ni borra.
+   · Reproductor: suena la fila y quita cada canción al terminar (laptop/TV del bar).
+     Se activa desde el botón de arriba a la derecha, o abriendo  index.html?modo=reproductor
+     (el dispositivo recuerda su modo). Para volver:  index.html?modo=control
+   · Catálogo (géneros y canciones de Inicio): está al principio de este bloque, busca CATS.
+     Cada canción es [idDeYouTube, 'Título', 'Artista'].
+   ===================================================================== */
+
+/* ===== Configuración ===== */
+const CFG = {
+  SUPABASE_URL: 'https://zothgtvmkuranngxmumc.supabase.co',
+  SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ',
+  YOUTUBE_KEY: 'AIzaSyAHKvpCidYJTCFasu0XsQYvCSUwHsWA4mI',
+  TABLA: 'cola_reproduccion',
+  POLL_MS: 2500,
+  // Opcional: si pones un PIN, hará falta para convertir un dispositivo en Reproductor.
+  ADMIN_PIN: ''
+};
+
+/* ===== Estado ===== */
+const S = {
+  role: 'control',          // 'control' (celulares) | 'player' (compu/TV del bar)
+  view: 'cat',              // 'cat' | 'search' | 'favs'
+  cat: 'inicio',
+  query: '', searchTitle: '', results: [],
+  tab: 'home',
+  queue: [],                // filas válidas de Supabase: { id, video_id, title }
+  favs: [], bad: new Set(),
+  meta: {},                 // id de YouTube -> canción mostrada (para resolver los clics)
+  pending: new Set(),       // ids que se están agregando
+  opt: new Map(),           // id -> expira (se muestra "En fila" sin esperar al sondeo)
+  removed: new Map(),       // filas quitadas aquí (evita que reaparezcan por una respuesta vieja)
+  delRetry: new Set(),      // filas cuyo borrado falló y se reintenta
+  currentId: null, yt: null, ytReady: false, online: true
+};
+
+/* ===== Utilidades ===== */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const ID_RE = /^[\w-]{11}$/;
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const decodeHTML = s => { const t = document.createElement('textarea'); t.innerHTML = String(s == null ? '' : s); return t.value; };
+const ic = (n, cls) => '<svg class="i ' + (cls || '') + '" aria-hidden="true"><use href="#i-' + n + '"/></svg>';
+const thumbUrl = id => 'https://i.ytimg.com/vi/' + id + '/mqdefault.jpg';
+const fmt = s => { s = Math.max(0, Math.floor(s || 0)); const r = s % 60; return Math.floor(s / 60) + ':' + (r < 10 ? '0' : '') + r; };
+const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* modo privado */ } }
+};
+
+let toastT;
+function toast(msg, err) {
+  const el = $('#toast');
+  el.textContent = msg; el.className = 'toast show' + (err ? ' err' : '');
+  clearTimeout(toastT); toastT = setTimeout(() => { el.className = 'toast'; }, 2600);
+}
+
+/* ===== Favoritos (compatibles con las páginas anteriores: guardan id y video_id) ===== */
+function loadFavs() {
+  const raw = store.get('alaska_favs', []), out = [], seen = new Set();
+  (Array.isArray(raw) ? raw : []).forEach(f => {
+    const id = f && (f.video_id || f.id);
+    if (!id || !ID_RE.test(id) || seen.has(id)) return;
+    seen.add(id);
+    // "title" guarda el texto completo (compatible con las páginas viejas); "name" el título limpio
+    const full = decodeHTML(f.title).slice(0, 200);
+    out.push({ id, title: decodeHTML(f.name || f.title).slice(0, 200), artist: decodeHTML(f.artist || ''), dbTitle: full });
+  });
+  return out;
+}
+function saveFavs() {
+  store.set('alaska_favs', S.favs.map(f => ({ id: f.id, video_id: f.id, title: f.dbTitle || f.title, name: f.title, artist: f.artist || '', thumb: thumbUrl(f.id) })));
+}
+const isFav = id => S.favs.some(f => f.id === id);
+const queueHas = id => S.queue.some(r => r.video_id === id) || (S.opt.get(id) || 0) > Date.now();
+
+/* ===== Base de datos (Supabase, solo REST: igual que antes) ===== */
+const SB_URL = () => CFG.SUPABASE_URL + '/rest/v1/' + CFG.TABLA;
+const sbHeaders = extra => Object.assign({ apikey: CFG.SUPABASE_KEY, Authorization: 'Bearer ' + CFG.SUPABASE_KEY }, extra || {});
+
+async function sbFetch(url, opts, ms) {
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms || 8000);
+  try { return await fetch(url, Object.assign({ cache: 'no-store' }, opts, { signal: ctl.signal })); }
+  finally { clearTimeout(t); }
+}
+async function dbList() {
+  const r = await sbFetch(SB_URL() + '?select=*&order=created_at.asc,id.asc&limit=300', { headers: sbHeaders() });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const rows = await r.json();
+  return Array.isArray(rows) ? rows : [];
+}
+async function dbAdd(videoId, title) {
+  const r = await sbFetch(SB_URL(), {
+    method: 'POST', headers: sbHeaders({ 'Content-Type': 'application/json', Prefer: 'return=minimal' }),
+    body: JSON.stringify([{ video_id: videoId, title: String(title).slice(0, 200) }])
+  });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+}
+async function dbDelete(rowId) {
+  const r = await sbFetch(SB_URL() + '?id=eq.' + encodeURIComponent(rowId), { method: 'DELETE', headers: sbHeaders() });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+}
+
+/* ===== Catálogo y vistas ===== */
+const catByKey = k => CATS.find(c => c.key === k) || CATS[0];
+function allCatalog() {
+  const seen = new Set(), out = [];
+  CATS.forEach(c => c.songs.forEach(s => { if (!seen.has(s.id)) { seen.add(s.id); out.push(s); } }));
+  return out;
+}
+
+function renderChips() {
+  const cur = (v, k) => (S.view === v && (v !== 'cat' || S.cat === k)) ? 'true' : 'false';
+  $('#chips').innerHTML = CATS.map(c =>
+    '<button type="button" class="chip" data-cat="' + c.key + '" aria-current="' + cur('cat', c.key) + '">' + c.emoji + ' ' + esc(c.label) + '</button>'
+  ).join('') +
+    '<button type="button" class="chip chip-fav" data-cat="favs" aria-current="' + cur('favs') + '">' +
+    '<svg class="i i-sm" style="color:var(--amber)" aria-hidden="true"><use href="#i-star"/></svg>Favoritos</button>';
+  // La opción elegida siempre queda a la vista y se indica si hay más chips a los lados
+  const box = $('#chips'), on = $('.chip[aria-current="true"]', box);
+  if (on) {
+    if (on.offsetLeft < box.scrollLeft) box.scrollLeft = on.offsetLeft - 16;
+    else if (on.offsetLeft + on.offsetWidth > box.scrollLeft + box.clientWidth) box.scrollLeft = on.offsetLeft + on.offsetWidth - box.clientWidth + 16;
+  }
+  chipFade();
+}
+function chipFade() {
+  const box = $('#chips'), wrap = box.parentNode;
+  wrap.classList.toggle('fade-l', box.scrollLeft > 4);
+  wrap.classList.toggle('fade-r', box.scrollLeft + box.clientWidth < box.scrollWidth - 4);
+}
+
+function songCard(s) {
+  if (!s.dbTitle) s.dbTitle = s.artist ? s.artist + ' - ' + s.title : s.title;
+  S.meta[s.id] = s;
+  const inQ = queueHas(s.id), fav = isFav(s.id);
+  return '<article class="song" data-vid="' + esc(s.id) + '">' +
+    '<div class="thumb"><img src="' + thumbUrl(s.id) + '" alt="" loading="lazy"></div>' +
+    '<div class="song-info">' +
+      '<h3 class="song-title">' + esc(s.title) + '</h3>' +
+      (s.artist ? '<p class="song-artist">' + esc(s.artist) + '</p>' : '') +
+      '<div class="song-acts">' +
+        '<button type="button" class="btn btn-add' + (inQ ? ' done' : '') + '" data-act="add"' + (inQ ? ' disabled' : '') + '>' + (inQ ? ic('check', 'i-sm') + 'En fila' : 'Agregar') + '</button>' +
+        '<button type="button" class="btn-fav" data-act="fav" aria-pressed="' + fav + '" aria-label="' + (fav ? 'Quitar de favoritos' : 'Guardar en favoritos') + '">' + ic(fav ? 'star' : 'star-o') + '</button>' +
+      '</div>' +
+    '</div></article>';
+}
+
+function viewSongs() {
+  if (S.view === 'favs') return S.favs;
+  if (S.view === 'search') return S.results;
+  return catByKey(S.cat).songs.filter(s => !S.bad.has(s.id));
+}
+
+function emptyHTML() {
+  if (S.view === 'favs') return '<div class="empty"><strong>Aún no tienes favoritos</strong>Toca la estrella de una canción para guardarla aquí.</div>';
+  if (S.view === 'search') return '<div class="empty"><strong>Sin resultados</strong>Prueba con otro nombre o revisa la conexión.</div>';
+  return '<div class="empty"><strong>No hay canciones disponibles</strong>Abre el modo del dispositivo y toca Revisar catálogo.</div>';
+}
+
+function renderView() {
+  const list = viewSongs(), grid = $('#grid'), more = $('#moreWrap');
+  $('#viewTitle').textContent = S.view === 'favs' ? 'Favoritos' : S.view === 'search' ? (S.searchTitle || 'Resultados') : catByKey(S.cat).label;
+  $('#viewSub').textContent = S.view === 'search' ? (S.query && !S.searchTitle ? '“' + S.query + '”' : '') :
+    (S.loading ? '' : list.length + (list.length === 1 ? ' canción' : ' canciones'));
+  $('#viewBack').hidden = S.view !== 'search';
+  more.innerHTML = '';
+  if (S.loading) {
+    grid.innerHTML = Array(8).fill('<div class="song sk"><div class="thumb"></div><div class="song-info"><div class="sk-line"></div><div class="sk-line s"></div></div></div>').join('');
+    return;
+  }
+  grid.innerHTML = list.length ? list.map(songCard).join('') : emptyHTML();
+  if (S.view === 'cat') more.innerHTML = '<button type="button" class="btn btn-more" data-act="more">Buscar más en YouTube</button>';
+}
+
+function setView(view, cat) {
+  S.view = view; if (cat) S.cat = cat;
+  if (view !== 'search') { S.query = ''; S.searchTitle = ''; $('#notice').hidden = true; }
+  S.loading = false;
+  renderChips(); renderView();
+  $('#view').scrollTop = 0;
+}
+
+function setTab(tab) {
+  S.tab = tab; document.body.dataset.tab = tab;
+  $$('.tab').forEach(b => b.setAttribute('aria-current', b.dataset.tab === tab ? 'page' : 'false'));
+}
+function goTab(tab) {
+  setTab(tab);
+  if (tab === 'favs') setView('favs');
+  else if (tab === 'home' && S.view === 'favs') setView('cat');
+}
+function showNotice(msg, kind) {
+  const n = $('#notice'); n.textContent = msg; n.className = 'notice' + (kind === 'err' ? ' err' : ''); n.hidden = !msg;
+}
+
+/* Actualiza botones sin volver a dibujar la rejilla (no pierde el scroll) */
+function refreshStates() {
+  $$('#grid .song[data-vid]').forEach(el => {
+    const id = el.dataset.vid, b = $('[data-act="add"]', el), f = $('[data-act="fav"]', el);
+    if (!b || !f) return;
+    const inQ = queueHas(id), busy = S.pending.has(id), fav = isFav(id);
+    b.classList.toggle('done', inQ); b.classList.toggle('busy', busy && !inQ);
+    b.disabled = inQ || busy;
+    b.innerHTML = inQ ? ic('check', 'i-sm') + 'En fila' : (busy ? 'Agregando…' : 'Agregar');
+    f.setAttribute('aria-pressed', fav);
+    f.setAttribute('aria-label', fav ? 'Quitar de favoritos' : 'Guardar en favoritos');
+    f.innerHTML = ic(fav ? 'star' : 'star-o');
+  });
+}
+
+/* ===== Fila de música ===== */
+let lastQSig = '';
+function renderQueue(force) {
+  const sig = S.role + '|' + S.currentId + '|' + S.queue.map(r => r.id + (isFav(r.video_id) ? '*' : '')).join(',');
+  if (!force && sig === lastQSig) return;
+  lastQSig = sig;
+  const list = $('#qList'), top = list.scrollTop, n = S.queue.length, badge = $('#tabBadge');
+  $('#qCount').textContent = n;
+  badge.hidden = !n; badge.textContent = n > 99 ? '99+' : n;
+  if (!n) {
+    list.innerHTML = '<li class="empty"><strong>La fila está vacía</strong>Busca una canción y toca Agregar.</li>';
+    return;
+  }
+  const player = S.role === 'player';
+  let nextMarked = false;
+  list.innerHTML = S.queue.map((r, i) => {
+    const now = player ? r.id === S.currentId : i === 0;
+    let state = 'En fila';
+    if (now) state = 'Sonando ahora'; else if (!nextMarked) { state = 'Sigue'; nextMarked = true; }
+    const fav = isFav(r.video_id);
+    const idx = now ? '<span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>' : (i + 1);
+    return '<li class="q-row' + (now ? ' now' : '') + '" data-row="' + esc(r.id) + '" data-vid="' + esc(r.video_id) + '">' +
+      '<span class="q-idx">' + idx + '</span>' +
+      '<div class="q-thumb" data-act="playnow"><img src="' + thumbUrl(r.video_id) + '" alt="" loading="lazy"></div>' +
+      '<div class="q-text" data-act="playnow"><p class="q-t">' + esc(r.title) + '</p><p class="q-s">' + state + '</p></div>' +
+      '<div class="q-acts">' +
+        '<button type="button" class="q-btn pl-act" data-act="playnow" aria-label="Reproducir ahora">' + ic('play') + '</button>' +
+        '<button type="button" class="q-btn fav" data-act="qfav" aria-pressed="' + fav + '" aria-label="' + (fav ? 'Quitar de favoritos' : 'Guardar en favoritos') + '">' + ic(fav ? 'star' : 'star-o') + '</button>' +
+        '<button type="button" class="q-btn rm pl-act" data-act="remove" aria-label="Quitar de la fila">' + ic('close') + '</button>' +
+      '</div></li>';
+  }).join('');
+  list.scrollTop = top;
+}
+
+/* Tarjeta "Sonando ahora" del modo Control (la primera de la fila) */
+function renderRemoteCard() {
+  const r = S.queue[0], img = $('#rcThumb');
+  if (!r) {
+    $('#rcLabel').textContent = 'Fila vacía'; $('#rcTitle').textContent = 'Agrega la primera canción';
+    $('#rcSub').textContent = ''; img.hidden = true; img.removeAttribute('data-vid');
+    return;
+  }
+  const rest = S.queue.length - 1;
+  $('#rcLabel').textContent = 'Sonando ahora';
+  $('#rcTitle').textContent = r.title;
+  $('#rcSub').textContent = rest ? (rest === 1 ? '1 más en la fila' : rest + ' más en la fila') : 'Es la única en la fila';
+  if (img.dataset.vid !== r.video_id) { img.classList.remove('broken'); img.src = thumbUrl(r.video_id); img.dataset.vid = r.video_id; }
+  img.hidden = false;
+}
+
+function updateTitle() {
+  const r = S.role === 'player' ? S.queue.find(x => x.id === S.currentId) : null;
+  document.title = r ? '▶ ' + r.title + ' — Alaska Rockola' : 'Alaska Rockola';
+}
+
+/* ===== Favoritos ===== */
+function toggleFav(id, fallback) {
+  const i = S.favs.findIndex(f => f.id === id);
+  if (i >= 0) { S.favs.splice(i, 1); toast('Quitada de favoritos'); }
+  else {
+    const s = S.meta[id] || fallback;
+    if (!s) return;
+    S.favs.push({ id, title: s.title, artist: s.artist || '', dbTitle: s.dbTitle || s.title });
+    toast('Guardada en favoritos');
+  }
+  saveFavs(); refreshStates(); renderQueue(true);
+  if (S.view === 'favs') { renderView(); renderChips(); }
+}
+
+/* ===== Estado de red y ventana de modo ===== */
+function setOnline(ok) {
+  S.online = ok;
+  $('#netStatus').classList.toggle('off', !ok);
+  $('#netText').textContent = ok ? 'En línea' : 'Sin conexión';
+}
+function syncOpts() {
+  $('#optControl').setAttribute('aria-checked', S.role === 'control');
+  $('#optPlayer').setAttribute('aria-checked', S.role === 'player');
+}
+let sheetOpener = null;
+function openSheet() { sheetOpener = document.activeElement; syncOpts(); $('#verifyOut').hidden = true; $('#sheet').hidden = false; $('#sheetClose').focus(); }
+function closeSheet() {
+  $('#sheet').hidden = true;
+  try { if (sheetOpener && sheetOpener.focus) sheetOpener.focus(); } catch (e) { /* ignorar */ }
+  sheetOpener = null;
+}
+
+/* Las miniaturas que no cargan se ocultan y dejan el fondo de color */
+document.addEventListener('error', e => { const t = e.target; if (t && t.tagName === 'IMG') t.classList.add('broken'); }, true);
+
+/* ===== Reproductor de YouTube (solo se carga en modo Reproductor) ===== */
+let gateT = null, wakeLock = null, seeking = false;
+
+const paintRange = el => el.style.setProperty('--p', ((el.value - el.min) / (el.max - el.min) * 100) + '%');
+
+function loadYT() {
+  if (S.yt) return;
+  if (window.YT && YT.Player) { createPlayer(); return; }
+  if (loadYT.loading) return;
+  loadYT.loading = true;
+  window.onYouTubeIframeAPIReady = createPlayer;
+  const s = document.createElement('script');
+  s.src = 'https://www.youtube.com/iframe_api'; s.async = true;
+  s.onerror = () => { loadYT.loading = false; toast('No se pudo cargar YouTube. Revisa la conexión.', true); };
+  document.head.appendChild(s);
+}
+
+function createPlayer() {
+  if (S.role !== 'player' || S.yt) return;
+  const vars = { autoplay: 1, controls: 0, disablekb: 1, fs: 0, iv_load_policy: 3, modestbranding: 1, playsinline: 1, rel: 0 };
+  if (/^https?:$/.test(location.protocol)) vars.origin = location.origin;
+  S.ytReady = false;
+  S.yt = new YT.Player('player', {
+    width: '100%', height: '100%', playerVars: vars,
+    events: { onReady: onYTReady, onStateChange: onYTState, onError: onYTError }
+  });
+}
+
+function destroyPlayer() {
+  clearTimeout(gateT); setPlaying(false);
+  try { if (S.yt && S.yt.destroy) S.yt.destroy(); } catch (e) { /* ya no existe */ }
+  S.yt = null; S.ytReady = false; S.currentId = null;
+  if (!$('#player')) { const d = document.createElement('div'); d.id = 'player'; const box = $('#playerBox'); box.insertBefore(d, box.firstChild); }
+  $('#gate').hidden = true; $('#idle').hidden = false;
+}
+
+function onYTReady() {
+  S.ytReady = true;
+  const v = store.get('alaska_vol', 100);
+  try { S.yt.setVolume(v); } catch (e) { /* ignorar */ }
+  const vol = $('#vol'); vol.value = v; paintRange(vol);
+  $('#volIcon').setAttribute('href', v === 0 ? '#i-mute' : '#i-vol');
+  syncPlayer();
+}
+
+function onYTState(e) {
+  const st = e.data, P = YT.PlayerState;
+  if (st === P.ENDED) { advance(); return; }
+  if (st === P.PLAYING) { setPlaying(true); $('#gate').hidden = true; }
+  else if (st === P.PAUSED) setPlaying(false);
+}
+
+function onYTError(e) {
+  const cur = S.currentId, row = S.queue.find(r => r.id === cur);
+  // 100 = no existe, 101/150 = el dueño no permite reproducirlo fuera de YouTube
+  if (row && [100, 101, 150].indexOf(e.data) >= 0) {
+    S.bad.add(row.video_id); store.set('alaska_bad', Array.from(S.bad));
+    if (S.view === 'cat') renderView();
+  }
+  toast('No se pudo reproducir esa canción. Pasando a la siguiente.', true);
+  setTimeout(() => { if (cur && S.currentId === cur) advance(); }, 1200);
+}
+
+function setPlaying(on) {
+  document.body.classList.toggle('playing', !!on);
+  $('#playIcon').setAttribute('href', on ? '#i-pause' : '#i-play');
+  $('#btnPlay').setAttribute('aria-label', on ? 'Pausar' : 'Reproducir');
+}
+
+/* ===== Qué suena ===== */
+function playFirstOrIdle() {
+  const row = S.queue[0];
+  if (row) playRow(row); else goIdle();
+}
+function goIdle() {
+  S.currentId = null; clearTimeout(gateT);
+  try { S.yt.stopVideo(); } catch (e) { /* ignorar */ }
+  $('#idle').hidden = false; $('#gate').hidden = true; setPlaying(false);
+  resetProgress(); updateNow(); renderQueue(); updateTitle();
+}
+function playRow(row) {
+  S.currentId = row.id;
+  $('#idle').hidden = true; $('#gate').hidden = true;
+  try { S.yt.loadVideoById(row.video_id); } catch (e) { /* ignorar */ }
+  resetProgress(); armGate(); updateNow(); renderQueue(); updateTitle();
+}
+/* Si el navegador bloquea el sonido automático, pide un toque para activarlo */
+function armGate() {
+  clearTimeout(gateT);
+  gateT = setTimeout(() => {
+    if (S.role !== 'player' || !S.yt || !S.currentId) return;
+    const st = S.yt.getPlayerState(), P = YT.PlayerState;
+    if (st !== P.PLAYING && st !== P.BUFFERING) $('#gate').hidden = false;
+  }, 3500);
+}
+function resetProgress() {
+  $('#curTime').textContent = '0:00'; $('#totTime').textContent = '0:00';
+  const sk = $('#seek'); sk.value = 0; paintRange(sk);
+}
+function updateNow() {
+  const r = S.queue.find(x => x.id === S.currentId);
+  if (!r) {
+    $('#npTitle').textContent = 'Nada suena todavía';
+    $('#npSub').textContent = S.queue.length ? 'Preparando la fila…' : 'La fila está vacía';
+    return;
+  }
+  const next = S.queue.find(x => x.id !== r.id);
+  $('#npTitle').textContent = r.title;
+  $('#npSub').textContent = next ? 'Sigue: ' + next.title : 'Es la última de la fila';
+}
+
+/* Mantiene el reproductor al día con la fila (otro dispositivo puede cambiarla) */
+function syncPlayer() {
+  if (S.role !== 'player' || !S.ytReady) return;
+  const cur = S.currentId;
+  if (cur && !S.queue.some(r => r.id === cur)) { S.currentId = null; playFirstOrIdle(); }
+  else if (!cur && S.queue.length) playFirstOrIdle();
+  else updateNow();
+}
+
+/* Quita la fila de la lista local y de Supabase (reintenta si falla) */
+function dropRow(rowId) {
+  rowId = String(rowId);
+  S.removed.set(rowId, Date.now());
+  S.queue = S.queue.filter(r => r.id !== rowId);
+  dbDelete(rowId).catch(() => { S.delRetry.add(rowId); });
+}
+function advance() {
+  const cur = S.currentId;
+  if (!cur) return;
+  S.currentId = null;
+  dropRow(cur);
+  playFirstOrIdle();
+  afterQueue(false);
+}
+function skipSong() {
+  if (!S.currentId) { toast('No hay ninguna canción sonando'); return; }
+  advance();
+}
+function playNow(rowId) {
+  const row = S.queue.find(r => r.id === rowId);
+  if (!row || !S.ytReady || rowId === S.currentId) return;          // tocar la que ya suena no la reinicia
+  if (S.currentId) dropRow(S.currentId);                            // igual que antes: la que sonaba se descarta
+  playRow(row); afterQueue(false);
+}
+function removeFromQueue(rowId) {
+  if (rowId === S.currentId) { advance(); toast('Pasando a la siguiente'); return; }
+  dropRow(rowId); afterQueue(false); updateNow(); toast('Quitada de la fila');
+}
+
+/* ===== Controles ===== */
+function togglePlay() {
+  if (!S.ytReady) return;
+  if (!S.currentId) { toast('Agrega canciones a la fila'); return; }
+  if (S.yt.getPlayerState() === YT.PlayerState.PLAYING) S.yt.pauseVideo(); else S.yt.playVideo();
+}
+function seekBy(sec) {
+  if (S.ytReady && S.currentId) S.yt.seekTo(Math.max(0, S.yt.getCurrentTime() + sec), true);
+}
+function setVol(v) {
+  v = +v;
+  if (S.ytReady) { S.yt.setVolume(v); if (v > 0 && S.yt.isMuted()) S.yt.unMute(); }
+  store.set('alaska_vol', v);
+  $('#volIcon').setAttribute('href', v === 0 ? '#i-mute' : '#i-vol'); paintRange($('#vol'));
+}
+function toggleMute() {
+  if (!S.ytReady) return;
+  if (S.yt.isMuted()) S.yt.unMute(); else S.yt.mute();
+  $('#volIcon').setAttribute('href', S.yt.isMuted() ? '#i-mute' : '#i-vol');
+}
+function toggleFull() {
+  const d = document, el = $('#playerBox');
+  if (d.fullscreenElement || d.webkitFullscreenElement) { (d.exitFullscreen || d.webkitExitFullscreen).call(d); return; }
+  const req = el.requestFullscreen || el.webkitRequestFullscreen;
+  if (!req) { toast('La pantalla completa no está disponible aquí', true); return; }
+  try { const p = req.call(el); if (p && p.catch) p.catch(() => toast('La pantalla completa no está disponible aquí', true)); }
+  catch (e) { toast('La pantalla completa no está disponible aquí', true); }
+}
+
+/* Progreso: se actualiza dos veces por segundo, sin pelear con el dedo mientras se arrastra */
+setInterval(() => {
+  if (S.role !== 'player' || !S.ytReady || !S.currentId || seeking) return;
+  let cur = 0, tot = 0, st;
+  try { cur = S.yt.getCurrentTime(); tot = S.yt.getDuration(); st = S.yt.getPlayerState(); } catch (e) { return; }
+  if (st === YT.PlayerState.UNSTARTED || !(tot > 0)) return;
+  $('#curTime').textContent = fmt(cur); $('#totTime').textContent = fmt(tot);
+  const sk = $('#seek'); sk.value = Math.round(cur / tot * 1000); paintRange(sk);
+}, 500);
+
+/* La pantalla del bar no debe apagarse */
+async function keepAwake() {
+  try {
+    if (S.role === 'player' && 'wakeLock' in navigator && !wakeLock) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    }
+  } catch (e) { /* no disponible */ }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) keepAwake(); });
+
+function startPlayerMode() { loadYT(); keepAwake(); }
+function stopPlayerMode() {
+  destroyPlayer();
+  if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+}
+
+/* ===== Cambios en la fila ===== */
+function afterQueue(sync) {
+  renderQueue(); refreshStates(); renderRemoteCard(); updateTitle();
+  if (S.role === 'control') document.body.classList.toggle('playing', S.queue.length > 0);
+  if (sync !== false) syncPlayer();
+}
+
+/* ===== Sondeo de Supabase (cada pocos segundos, sin solaparse) ===== */
+let pollT = null, pollBusy = false, pollAgain = false, fails = 0, lastSig = null;
+const schedulePoll = () => { clearTimeout(pollT); pollT = setTimeout(poll, CFG.POLL_MS); };
+function pollNow() { if (pollBusy) { pollAgain = true; return; } clearTimeout(pollT); poll(); }
+
+async function poll() {
+  if (pollBusy) return;
+  pollBusy = true;
+  try {
+    for (const id of Array.from(S.delRetry)) { try { await dbDelete(id); S.delRetry.delete(id); } catch (e) { /* se reintenta luego */ } }
+    const rows = await dbList();
+    fails = 0; setOnline(true);
+    applyRows(rows);
+  } catch (e) {
+    fails++; if (fails >= 2) setOnline(false);
+  } finally {
+    pollBusy = false;
+    if (pollAgain) { pollAgain = false; poll(); } else schedulePoll();
+  }
+}
+
+function applyRows(rows) {
+  const now = Date.now(), optBefore = S.opt.size;
+  S.removed.forEach((t, id) => { if (now - t > 20000 && !S.delRetry.has(id)) S.removed.delete(id); });
+  S.opt.forEach((t, id) => { if (t < now) S.opt.delete(id); });
+  const valid = [];
+  rows.forEach(r => {
+    const id = String(r.id);
+    if (S.removed.has(id) || S.delRetry.has(id)) return;
+    if (!r.video_id || !ID_RE.test(r.video_id)) { if (S.role === 'player') dropRow(id); return; }
+    valid.push({ id, video_id: r.video_id, title: decodeHTML(r.title || '').slice(0, 200) || 'Canción sin título' });
+  });
+  const sig = valid.map(r => r.id).join(',');
+  S.queue = valid;
+  if (sig !== lastSig) { lastSig = sig; afterQueue(); }
+  else if (S.opt.size !== optBefore) refreshStates();
+  else if (S.role === 'player') syncPlayer();
+}
+
+/* ===== Agregar canciones ===== */
+async function addSong(id) {
+  const s = S.meta[id];
+  if (!s || S.pending.has(id)) return;
+  if (queueHas(id)) { toast('Ya está en la fila'); return; }
+  S.pending.add(id); refreshStates();
+  try {
+    await dbAdd(id, s.dbTitle || s.title);
+    S.opt.set(id, Date.now() + 8000);
+    toast('Agregada a la fila');
+    pollNow();
+  } catch (e) {
+    toast('No se pudo agregar. Revisa la conexión e inténtalo de nuevo.', true);
+  } finally {
+    S.pending.delete(id); refreshStates();
+  }
+}
+
+/* ===== Búsqueda en YouTube (con respaldo en el catálogo) ===== */
+function localSearch(q) {
+  const toks = norm(q).split(/\s+/).filter(Boolean), tag = {};
+  CATS.forEach(c => { if (c.tags) c.songs.forEach(s => { tag[s.id] = norm(c.label + ' ' + c.tags); }); });   // también se busca por género
+  return allCatalog().filter(s => {
+    if (S.bad.has(s.id)) return false;
+    const hay = norm(s.title + ' ' + s.artist) + ' ' + (tag[s.id] || '');
+    return toks.every(t => hay.indexOf(t) >= 0);
+  });
+}
+
+async function runSearch(q, title) {
+  q = q.trim(); if (!q) return;
+  S.view = 'search'; S.query = q; S.searchTitle = title || ''; S.results = []; S.loading = true;
+  showNotice(''); renderChips(); renderView(); $('#view').scrollTop = 0;
+  let notice = '', kind = '';
+  try {
+    const params = new URLSearchParams({ part: 'snippet', type: 'video', maxResults: '20', videoEmbeddable: 'true', q, key: CFG.YOUTUBE_KEY });
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 10000);
+    let data;
+    try { const r = await fetch('https://www.googleapis.com/youtube/v3/search?' + params.toString(), { signal: ctl.signal }); data = await r.json(); }
+    finally { clearTimeout(t); }
+    if (data.error) {
+      const err = new Error(data.error.message || 'API');
+      err.reason = (data.error.errors && data.error.errors[0] && data.error.errors[0].reason) || '';
+      throw err;
+    }
+    S.results = (data.items || []).filter(i => i.id && ID_RE.test(i.id.videoId || '')).map(i => {
+      const tt = decodeHTML(i.snippet.title);
+      return { id: i.id.videoId, title: tt, artist: decodeHTML(i.snippet.channelTitle), dbTitle: tt };
+    });
+  } catch (e) {
+    S.results = localSearch(q);
+    notice = /quota|limit/i.test(e.reason || '') ?
+      'YouTube alcanzó su límite de búsquedas por hoy. Mostrando coincidencias del catálogo.' :
+      'No se pudo buscar en YouTube. Mostrando coincidencias del catálogo.';
+    kind = 'err';
+  }
+  if (S.view !== 'search' || S.query !== q) return;   // la persona se fue a otra vista
+  S.loading = false; renderView(); showNotice(notice, kind);
+}
+
+/* ===== Modo del dispositivo ===== */
+function setRole(role, persist) {
+  S.role = role; document.body.dataset.role = role;
+  $('#roleText').textContent = role === 'player' ? 'Reproductor' : 'Control';
+  $('#roleIcon').setAttribute('href', role === 'player' ? '#i-tv' : '#i-phone');
+  if (persist) store.set('alaska_role', role);
+  if (role === 'player') startPlayerMode(); else stopPlayerMode();
+  document.body.classList.toggle('playing', false);
+  syncOpts(); renderQueue(true); renderRemoteCard(); updateTitle();
+  if (role === 'control') document.body.classList.toggle('playing', S.queue.length > 0);
+}
+function requestRole(role) {
+  if (role === S.role) { closeSheet(); return; }
+  if (role === 'player' && CFG.ADMIN_PIN && window.prompt('PIN de administrador') !== CFG.ADMIN_PIN) { toast('PIN incorrecto', true); return; }
+  setRole(role, true); closeSheet();
+}
+
+/* Revisa en este navegador cuáles canciones del catálogo no se pueden reproducir y las oculta */
+async function verifyCatalog() {
+  const out = $('#verifyOut'), btn = $('#btnVerify');
+  out.hidden = false; btn.disabled = true; out.textContent = 'Revisando…';
+  const songs = allCatalog(), todo = songs.slice(), bad = [], unknown = [];
+  let done = 0;
+  const worker = async () => {
+    while (todo.length) {
+      const s = todo.shift();
+      try {
+        const r = await fetch('https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent('https://www.youtube.com/watch?v=' + s.id));
+        if (!r.ok) { if ([400, 401, 403, 404].indexOf(r.status) >= 0) bad.push(s); else unknown.push(s); }
+      } catch (e) { unknown.push(s); }
+      out.textContent = 'Revisando ' + (++done) + ' de ' + songs.length + '…';
+    }
+  };
+  await Promise.all([worker(), worker(), worker(), worker()]);
+  btn.disabled = false;
+  if (unknown.length === songs.length) {   // sin respuesta de YouTube: no se toca lo que ya estaba oculto
+    out.textContent = 'No se pudo revisar desde este navegador. Verifica la conexión e inténtalo de nuevo.';
+    return;
+  }
+  const inCatalog = new Set(songs.map(s => s.id)), next = new Set();
+  S.bad.forEach(id => { if (!inCatalog.has(id)) next.add(id); });
+  unknown.forEach(s => { if (S.bad.has(s.id)) next.add(s.id); });
+  bad.forEach(s => next.add(s.id));
+  S.bad = next; store.set('alaska_bad', Array.from(S.bad));
+  const checked = songs.length - unknown.length;
+  if (bad.length) out.innerHTML = '<b>' + bad.length + ' no disponibles</b> y ocultas en este dispositivo: ' + bad.map(s => esc(s.artist + ' – ' + s.title) + ' (' + esc(s.id) + ')').join('; ') + '.';
+  else out.textContent = 'Las ' + checked + ' canciones revisadas se pueden reproducir.';
+  if (unknown.length) out.textContent += ' No se pudieron revisar ' + unknown.length + '.';
+  if (S.view === 'cat') renderView();
+}
+
+/* ===== Eventos ===== */
+function toggleClear() { $('#searchClear').hidden = !$('#searchInput').value; }
+function goHome() { $('#searchInput').value = ''; toggleClear(); setTab('home'); setView('cat', 'inicio'); }
+
+function bind() {
+  document.addEventListener('click', e => {
+    const a = e.target.closest('[data-act]');
+    if (!a) return;
+    const row = a.closest('[data-row]'), card = a.closest('[data-vid]'), vid = card && card.dataset.vid;
+    switch (a.dataset.act) {
+      case 'add': addSong(vid); break;
+      case 'fav': toggleFav(vid); break;
+      case 'qfav': { const r = S.queue.find(x => x.id === row.dataset.row); toggleFav(vid, r && { id: vid, title: r.title, artist: '', dbTitle: r.title }); break; }
+      case 'more': { const c = catByKey(S.cat); runSearch(c.q, 'Más de ' + c.label); break; }
+      case 'playnow': if (S.role === 'player') playNow(row.dataset.row); break;
+      case 'remove': if (S.role === 'player') removeFromQueue(row.dataset.row); break;
+    }
+  });
+
+  $('#chips').addEventListener('click', e => {
+    const b = e.target.closest('[data-cat]'); if (!b) return;
+    $('#searchInput').value = ''; toggleClear();
+    if (b.dataset.cat === 'favs') { setTab('favs'); setView('favs'); }
+    else { setTab('home'); setView('cat', b.dataset.cat); }
+  });
+  $('#chips').addEventListener('scroll', chipFade, { passive: true });
+  window.addEventListener('resize', chipFade);
+  $$('.tab').forEach(b => b.addEventListener('click', () => goTab(b.dataset.tab)));
+  document.querySelector('.brand').addEventListener('click', e => { e.preventDefault(); goHome(); });
+
+  const input = $('#searchInput');
+  input.addEventListener('input', toggleClear);
+  $('#searchClear').addEventListener('click', () => { input.value = ''; toggleClear(); input.focus(); });
+  $('#searchForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const q = input.value.trim();
+    if (!q) { goHome(); return; }
+    input.blur(); setTab('home'); runSearch(q);
+  });
+  $('#viewBack').addEventListener('click', () => { input.value = ''; toggleClear(); setView('cat'); });
+
+  // Modo del dispositivo
+  $('#roleBtn').addEventListener('click', openSheet);
+  $('#rcSwitch').addEventListener('click', openSheet);
+  $('#sheetClose').addEventListener('click', closeSheet);
+  $('#sheet').addEventListener('click', e => { if (e.target.id === 'sheet') closeSheet(); });
+  $('#optControl').addEventListener('click', () => requestRole('control'));
+  $('#optPlayer').addEventListener('click', () => requestRole('player'));
+  $('#btnVerify').addEventListener('click', verifyCatalog);
+
+  // Reproductor
+  $('#btnPlay').addEventListener('click', togglePlay);
+  $('#btnBack').addEventListener('click', () => seekBy(-10));
+  $('#btnFwd').addEventListener('click', () => seekBy(10));
+  $('#btnNext').addEventListener('click', skipSong);
+  $('#btnMute').addEventListener('click', toggleMute);
+  $('#btnFull').addEventListener('click', toggleFull);
+  $('#shield').addEventListener('click', togglePlay);
+  $('#shield').addEventListener('dblclick', toggleFull);
+  $('#gateBtn').addEventListener('click', () => { try { S.yt.playVideo(); } catch (e) { /* ignorar */ } $('#gate').hidden = true; });
+  const vol = $('#vol'); vol.addEventListener('input', () => setVol(vol.value)); paintRange(vol);
+  const sk = $('#seek'); paintRange(sk);
+  sk.addEventListener('input', () => {
+    seeking = true; paintRange(sk);
+    if (S.ytReady) $('#curTime').textContent = fmt(sk.value / 1000 * (S.yt.getDuration() || 0));
+  });
+  sk.addEventListener('change', () => {
+    if (S.ytReady && S.currentId) S.yt.seekTo(sk.value / 1000 * (S.yt.getDuration() || 0), true);
+    seeking = false;
+  });
+  sk.addEventListener('blur', () => { seeking = false; });
+
+  document.addEventListener('keydown', e => {
+    const t = e.target, typing = t && ((t.tagName === 'INPUT' && t.type !== 'range') || t.tagName === 'TEXTAREA');
+    if (e.key === 'Escape') { if (!$('#sheet').hidden) closeSheet(); return; }
+    if (e.key === 'Tab' && !$('#sheet').hidden) {   // el foco se queda dentro de la ventana mientras está abierta
+      const f = $$('#sheet button:not([disabled])'), first = f[0], last = f[f.length - 1], act = document.activeElement;
+      if (!$('#sheet').contains(act) || (e.shiftKey && act === first)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+      else if (!e.shiftKey && act === last) { e.preventDefault(); first.focus(); }
+      return;
+    }
+    if (typing || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.key === '/') { e.preventDefault(); input.focus(); return; }
+    if (S.role !== 'player') return;
+    const onRange = t && t.type === 'range', onBtn = t && t.tagName === 'BUTTON';
+    if (e.key === ' ' && !onBtn) { e.preventDefault(); togglePlay(); }
+    else if (e.key === 'ArrowRight' && !onRange) seekBy(10);
+    else if (e.key === 'ArrowLeft' && !onRange) seekBy(-10);
+    else if (e.key === 'm' || e.key === 'M') toggleMute();
+  });
+
+  window.addEventListener('online', pollNow);
+  window.addEventListener('offline', () => setOnline(false));
+}
+
+/* ===== Arranque ===== */
+(function init() {
+  S.favs = loadFavs();
+  S.bad = new Set((store.get('alaska_bad', []) || []).filter(id => ID_RE.test(id)));
+  bind();
+  renderChips(); renderView(); renderQueue(true); renderRemoteCard();
+
+  let role = store.get('alaska_role', 'control') === 'player' ? 'player' : 'control';
+  const want = new URLSearchParams(location.search).get('modo');   // ej. index.html?modo=reproductor
+  if (want) {
+    const w = /^(reproductor|tv|player)$/i.test(want) ? 'player' : 'control';
+    if (w === 'player' && role !== 'player' && CFG.ADMIN_PIN && window.prompt('PIN de administrador') !== CFG.ADMIN_PIN) { /* se queda como está */ }
+    else role = w;
+  }
+  setRole(role, true);
+  poll();
+})();
+
+</script>
+</body>
+</html>
