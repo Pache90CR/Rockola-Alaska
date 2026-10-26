@@ -3,39 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0a1016">
-<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#EAE6DB">
+<meta name="color-scheme" content="light">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Rockola">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3Cpath id='a' d='M12 12V3M9.6 5.2 12 7.4l2.4-2.2'/%3E%3C/defs%3E%3Crect width='24' height='24' rx='6' fill='%230a1016'/%3E%3Cg fill='none' stroke='%235eead4' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' transform='translate(12 12) scale(.8) translate(-12 -12)'%3E%3Cuse href='%23a'/%3E%3Cuse href='%23a' transform='rotate(60 12 12)'/%3E%3Cuse href='%23a' transform='rotate(120 12 12)'/%3E%3Cuse href='%23a' transform='rotate(180 12 12)'/%3E%3Cuse href='%23a' transform='rotate(240 12 12)'/%3E%3Cuse href='%23a' transform='rotate(300 12 12)'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3Cpath id='a' d='M12 12V3M9.6 5.2 12 7.4l2.4-2.2'/%3E%3C/defs%3E%3Crect width='24' height='24' rx='6' fill='%23EAE6DB'/%3E%3Cg fill='none' stroke='%2316264C' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' transform='translate(12 12) scale(.8) translate(-12 -12)'%3E%3Cuse href='%23a'/%3E%3Cuse href='%23a' transform='rotate(60 12 12)'/%3E%3Cuse href='%23a' transform='rotate(120 12 12)'/%3E%3Cuse href='%23a' transform='rotate(180 12 12)'/%3E%3Cuse href='%23a' transform='rotate(240 12 12)'/%3E%3Cuse href='%23a' transform='rotate(300 12 12)'/%3E%3C/g%3E%3C/svg%3E">
 <title>Alaska Rockola</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700&display=swap">
 <style>
-/* ===== Tokens: "Noche polar" ===== */
+/* ===== Tokens: "Alaska Logo" ===== */
 :root {
-  --bg: #0a1016;        /* fondo: noche polar */
-  --panel: #0f1820;     /* paneles */
-  --raise: #16222d;     /* chips, campos */
-  --raise-2: #1e2d3a;   /* hover */
-  --line: rgba(170, 205, 225, .12);
-  --line-2: rgba(170, 205, 225, .24);
-  --text: #e9f4f8;      /* hielo */
-  --muted: #8fa5b2;     /* escarcha */
-  --faint: #62767f;
-  --ice: #5eead4;       /* acción principal / sonando */
-  --ice-ink: #052b27;
-  --violet: #8b7bff;    /* solo en la aurora */
-  --amber: #ffc24b;     /* favoritos */
-  --coral: #ff7a7a;     /* errores y quitar */
+  --bg: #EAE6DB;        /* fondo: beige texturizado del logo */
+  --panel: #F2EFE8;     /* paneles: beige más limpio */
+  --raise: #DFDACD;     /* chips, campos de búsqueda */
+  --raise-2: #D1CBB9;   /* hover */
+  --line: rgba(22, 38, 76, .12);
+  --line-2: rgba(22, 38, 76, .24);
+  --text: #16264C;      /* azul marino intenso de la montaña y texto */
+  --muted: #5C6A8A;     /* texto secundario */
+  --faint: #929EBA;
+  --ice: #16264C;       /* acción principal: azul marino */
+  --ice-ink: #EAE6DB;   /* texto sobre el botón: beige */
+  --violet: #2D437A;    /* acentos de aurora */
+  --amber: #D97706;     /* favoritos: dorado oscuro */
+  --coral: #DC2626;     /* errores y quitar */
   --r-s: 8px; --r-m: 12px; --r-l: 18px;
   --font-ui: 'Figtree', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-display: 'Unbounded', 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --side-w: clamp(340px, 28vw, 540px);
   --nav-h: 3.9rem;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -48,13 +48,13 @@ body {
 }
 button, input { font: inherit; color: inherit; }
 button { cursor: pointer; border: 0; background: none; padding: 0; touch-action: manipulation; }
-button:disabled { cursor: default; }
+button:disabled { cursor: default; opacity: 0.6; }
 h1, h2, h3, p, ol { margin: 0; padding: 0; }
 ol { list-style: none; }
 img { display: block; max-width: 100%; }
 [hidden] { display: none !important; }
 :focus-visible { outline: 2px solid var(--ice); outline-offset: 2px; }
-::selection { background: rgba(94, 234, 212, .3); }
+::selection { background: rgba(22, 38, 76, .2); }
 
 .i { width: 1.5rem; height: 1.5rem; fill: currentColor; flex: none; }
 .i-sm { width: 1.15rem; height: 1.15rem; }
@@ -78,7 +78,7 @@ img { display: block; max-width: 100%; }
   background: var(--raise); border: 1px solid var(--line-2); border-radius: 999px;
   padding-left: 1rem; transition: border-color .15s, background .15s;
 }
-.search:focus-within { border-color: var(--ice); background: #0d1720; }
+.search:focus-within { border-color: var(--ice); background: #FAF9F6; }
 .search > .i { color: var(--muted); }
 .search input {
   flex: 1; min-width: 0; height: 100%; background: none; border: 0; outline: 0;
@@ -99,9 +99,9 @@ img { display: block; max-width: 100%; }
 
 .top-right { display: flex; align-items: center; justify-content: flex-end; gap: .6rem; }
 .net { display: inline-flex; align-items: center; gap: .45rem; font-size: .85rem; color: var(--muted); white-space: nowrap; }
-.net .dot { width: .6rem; height: .6rem; border-radius: 50%; background: var(--ice); box-shadow: 0 0 0 3px rgba(94, 234, 212, .18); }
+.net .dot { width: .6rem; height: .6rem; border-radius: 50%; background: var(--ice); box-shadow: 0 0 0 3px rgba(22, 38, 76, .18); }
 .net.off { color: var(--coral); }
-.net.off .dot { background: var(--coral); box-shadow: 0 0 0 3px rgba(255, 122, 122, .2); }
+.net.off .dot { background: var(--coral); box-shadow: 0 0 0 3px rgba(220, 38, 38, .2); }
 .role-chip {
   display: inline-flex; align-items: center; gap: .45rem; height: 2.3rem; padding: 0 .9rem 0 .7rem;
   border-radius: 999px; background: var(--raise); border: 1px solid var(--line-2);
@@ -149,9 +149,9 @@ img { display: block; max-width: 100%; }
 .link-btn:hover { text-decoration: underline; }
 .notice {
   margin-bottom: 1rem; padding: .75rem 1rem; border-radius: var(--r-m);
-  background: rgba(255, 194, 75, .1); border: 1px solid rgba(255, 194, 75, .35); color: #ffe3a6; font-size: .92rem;
+  background: rgba(217, 119, 6, .1); border: 1px solid rgba(217, 119, 6, .35); color: #B45309; font-size: .92rem;
 }
-.notice.err { background: rgba(255, 122, 122, .1); border-color: rgba(255, 122, 122, .35); color: #ffc9c9; }
+.notice.err { background: rgba(220, 38, 38, .1); border-color: rgba(220, 38, 38, .35); color: #991B1B; }
 
 .grid {
   display: grid; gap: 1.5rem 1rem;
@@ -160,7 +160,7 @@ img { display: block; max-width: 100%; }
 .song { min-width: 0; }
 .thumb {
   position: relative; display: block; width: 100%; padding-top: 56.25%; overflow: hidden;
-  border-radius: var(--r-m); background: linear-gradient(135deg, #17303a, #1b2140);
+  border-radius: var(--r-m); background: linear-gradient(135deg, var(--raise), var(--raise-2));
 }
 .thumb img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
 .thumb img.broken { display: none; }
@@ -178,10 +178,10 @@ img { display: block; max-width: 100%; }
   display: inline-flex; align-items: center; justify-content: center; gap: .4rem; white-space: nowrap;
 }
 .btn-add { background: var(--ice); color: var(--ice-ink); }
-.btn-add:hover { filter: brightness(1.08); }
+.btn-add:hover { opacity: 0.9; }
 .btn-add:active { transform: scale(.97); }
 .btn-add.busy { opacity: .7; }
-.btn-add.done { background: transparent; color: var(--ice); box-shadow: inset 0 0 0 1.5px rgba(94, 234, 212, .55); }
+.btn-add.done { background: transparent; color: var(--ice); box-shadow: inset 0 0 0 1.5px rgba(22, 38, 76, .55); }
 .btn-ghost { background: var(--raise); color: var(--text); }
 .btn-ghost:hover { background: var(--raise-2); }
 .btn-more { margin: 1.5rem auto 0; background: var(--raise); padding: 0 1.4rem; }
@@ -198,7 +198,7 @@ img { display: block; max-width: 100%; }
 .empty strong { display: block; color: var(--text); font-size: 1.05rem; margin-bottom: .35rem; }
 
 /* Esqueleto de carga */
-.sk .thumb, .sk .sk-line { background: linear-gradient(90deg, #131f29 25%, #1b2a36 50%, #131f29 75%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+.sk .thumb, .sk .sk-line { background: linear-gradient(90deg, var(--raise) 25%, var(--raise-2) 50%, var(--raise) 75%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
 .sk-line { height: .85rem; border-radius: 6px; margin-top: .6rem; }
 .sk-line.s { width: 55%; }
 @keyframes shimmer { to { background-position: -200% 0; } }
@@ -208,12 +208,12 @@ img { display: block; max-width: 100%; }
   position: relative; isolation: isolate; overflow: hidden;
   background: var(--panel); border-left: 1px solid var(--line); padding: 1rem;
 }
-/* Aurora: el único movimiento decorativo; solo aparece cuando suena música */
+/* Aurora decorativa ajustada al azul */
 .player-card::before {
   content: ""; position: absolute; z-index: -1; left: -15%; right: -15%; top: -30%; height: 85%;
   background:
-    radial-gradient(55% 70% at 25% 40%, rgba(94, 234, 212, .30), transparent 70%),
-    radial-gradient(45% 65% at 78% 30%, rgba(139, 123, 255, .26), transparent 70%);
+    radial-gradient(55% 70% at 25% 40%, rgba(22, 38, 76, .12), transparent 70%),
+    radial-gradient(45% 65% at 78% 30%, rgba(45, 67, 122, .1), transparent 70%);
   opacity: 0; transition: opacity 1s ease; animation: aurora 16s ease-in-out infinite alternate;
 }
 body.playing .player-card::before { opacity: 1; }
@@ -233,11 +233,11 @@ body[data-role="control"] .pl-act { display: none; }
 .shield { z-index: 2; cursor: pointer; }
 .idle {
   z-index: 1; display: grid; place-content: center; justify-items: center; gap: .4rem; text-align: center; padding: 1rem;
-  color: var(--muted); font-size: .9rem; background: radial-gradient(80% 90% at 50% 0%, #15303a, #0a1218);
+  color: var(--muted); font-size: .9rem; background: radial-gradient(80% 90% at 50% 0%, var(--raise), var(--bg));
 }
 .idle .i { width: 2.4rem; height: 2.4rem; color: var(--ice); opacity: .8; }
 .idle strong { color: var(--text); font-size: 1rem; }
-.gate { z-index: 3; display: grid; place-items: center; background: rgba(5, 10, 14, .8); }
+.gate { z-index: 3; display: grid; place-items: center; background: rgba(234, 230, 219, .85); }
 .gate button {
   display: inline-flex; align-items: center; gap: .5rem; padding: .85rem 1.3rem; border-radius: 999px;
   background: var(--ice); color: var(--ice-ink); font-weight: 800;
@@ -270,8 +270,8 @@ body.playing .eq i { animation: eq .9s ease-in-out infinite alternate; }
 input[type="range"] {
   -webkit-appearance: none; appearance: none; background: transparent; height: 1.5rem; width: 100%; margin: 0; cursor: pointer; --p: 0%;
 }
-input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--ice) var(--p), rgba(170, 205, 225, .22) var(--p)); }
-input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; background: rgba(170, 205, 225, .22); }
+input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(90deg, var(--ice) var(--p), rgba(22, 38, 76, .15) var(--p)); }
+input[type="range"]::-moz-range-track { height: 4px; border-radius: 2px; background: rgba(22, 38, 76, .15); }
 input[type="range"]::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--ice); }
 input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -5px; border-radius: 50%; background: var(--text); border: 0; }
 input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: var(--text); }
@@ -283,15 +283,15 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 0; bo
 .ctl:hover { background: var(--raise-2); }
 .ctl .t10 { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -34%); font-size: .55rem; font-weight: 800; pointer-events: none; }
 .ctl .flip { transform: scaleX(-1); }
-.ctl-play { width: 3rem; height: 3rem; background: var(--text); color: var(--bg); }
-.ctl-play:hover { background: #fff; }
+.ctl-play { width: 3rem; height: 3rem; background: var(--ice); color: var(--ice-ink); border-radius: 50%; }
+.ctl-play:hover { background: #2D437A; }
 .ctl-play .i { width: 1.75rem; height: 1.75rem; }
 .vol { display: flex; align-items: center; min-width: 0; }
 .vol input { flex: 0 1 5.5rem; width: 5.5rem; min-width: 2rem; }
 
 /* Tarjeta de "sonando ahora" para el rol Control */
 .ct-only { flex-direction: column; gap: .75rem; }
-.rc-thumb { position: relative; width: 100%; padding-top: 56.25%; border-radius: var(--r-m); overflow: hidden; background: radial-gradient(80% 90% at 50% 0%, #15303a, #0a1218); }
+.rc-thumb { position: relative; width: 100%; padding-top: 56.25%; border-radius: var(--r-m); overflow: hidden; background: radial-gradient(80% 90% at 50% 0%, var(--raise), var(--bg)); }
 .rc-thumb img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
 .rc-thumb img.broken { display: none; }
 .rc-label { color: var(--ice); font-size: .85rem; font-weight: 700; }
@@ -313,10 +313,10 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 0; bo
   padding: .45rem .5rem; border-radius: var(--r-m);
 }
 .q-row:hover { background: var(--raise); }
-.q-row.now { background: linear-gradient(90deg, rgba(94, 234, 212, .16), rgba(94, 234, 212, .03)); }
+.q-row.now { background: linear-gradient(90deg, rgba(22, 38, 76, .08), rgba(22, 38, 76, .02)); }
 .q-idx { display: grid; place-items: center; color: var(--muted); font-size: .85rem; font-weight: 700; }
 .q-idx .eq { height: 1rem; }
-.q-thumb { position: relative; padding-top: 56.25%; border-radius: var(--r-s); overflow: hidden; background: linear-gradient(135deg, #17303a, #1b2140); }
+.q-thumb { position: relative; padding-top: 56.25%; border-radius: var(--r-s); overflow: hidden; background: linear-gradient(135deg, var(--raise), var(--raise-2)); }
 .q-thumb img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
 .q-thumb img.broken { display: none; }
 .q-t { font-size: .92rem; font-weight: 600; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word; }
@@ -327,10 +327,10 @@ input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border: 0; bo
 .q-btn:hover { background: var(--raise-2); color: var(--text); }
 .q-btn.rm:hover { color: var(--coral); }
 .q-btn.fav[aria-pressed="true"] { color: var(--amber); }
-body[data-role="player"] .q-thumb, body[data-role="player"] .q-text { cursor: pointer; }   /* como antes: tocar una canción de la fila la reproduce */
+body[data-role="player"] .q-thumb, body[data-role="player"] .q-text { cursor: pointer; }
 .q-btn .i { width: 1.25rem; height: 1.25rem; }
 
-/* ===== Barra inferior (solo móvil/tablet vertical) ===== */
+/* ===== Barra inferior ===== */
 .tabbar {
   display: none; grid-template-columns: repeat(3, 1fr); background: var(--bg); border-top: 1px solid var(--line);
   padding-bottom: env(safe-area-inset-bottom);
@@ -350,9 +350,9 @@ body[data-role="player"] .q-thumb, body[data-role="player"] .q-text { cursor: po
   opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
-.toast.err { background: var(--coral); color: #2a0707; }
+.toast.err { background: var(--coral); color: #FFF; }
 
-.sheet { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 70; display: grid; place-items: center; background: rgba(3, 7, 10, .72); padding: 1rem; }
+.sheet { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 70; display: grid; place-items: center; background: rgba(22, 38, 76, .45); padding: 1rem; }
 .sheet-panel { width: min(100%, 30rem); max-height: 92vh; max-height: 92dvh; overflow: auto; background: var(--panel); border: 1px solid var(--line-2); border-radius: var(--r-l); padding: 1.25rem; }
 .sheet h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; letter-spacing: -.01em; margin-bottom: .35rem; }
 .sheet .help { color: var(--muted); font-size: .9rem; margin-bottom: 1rem; }
@@ -361,7 +361,7 @@ body[data-role="player"] .q-thumb, body[data-role="player"] .q-text { cursor: po
   border-radius: var(--r-m); background: var(--raise); border: 1.5px solid transparent;
 }
 .opt:hover { background: var(--raise-2); }
-.opt[aria-checked="true"] { border-color: var(--ice); background: rgba(94, 234, 212, .08); }
+.opt[aria-checked="true"] { border-color: var(--ice); background: rgba(22, 38, 76, .08); }
 .opt .i { color: var(--ice); margin-top: .1rem; }
 .opt strong { display: block; font-size: 1rem; }
 .opt span { color: var(--muted); font-size: .88rem; }
@@ -369,12 +369,11 @@ body[data-role="player"] .q-thumb, body[data-role="player"] .q-text { cursor: po
 .verify-out { margin-top: .8rem; font-size: .85rem; color: var(--muted); max-height: 10rem; overflow: auto; }
 .verify-out b { color: var(--coral); }
 
-/* Estado de red: en pantallas medianas queda solo el punto (si falla, vuelve a aparecer el texto) */
+/* Adaptaciones responsivas */
 @media (max-width: 1099px) {
   .net:not(.off) #netText { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
 
-/* Laptop y tablet horizontal: la fila vive en la columna derecha (angosta): el número va sobre la miniatura */
 @media (min-width: 900px) {
   .q-row { grid-template-columns: 4.3rem minmax(0, 1fr) auto; gap: .5rem; padding: .4rem .35rem; }
   .q-btn { width: 2rem; height: 2rem; }
@@ -384,12 +383,11 @@ body[data-role="player"] .q-thumb, body[data-role="player"] .q-text { cursor: po
   .q-acts { grid-column: 3; grid-row: 1; }
   .q-idx {
     align-self: start; justify-self: start; z-index: 1; margin: .22rem; min-width: 1.2rem; height: 1.2rem; padding: 0 .28rem;
-    border-radius: 5px; background: rgba(5, 10, 14, .78); color: var(--text); font-size: .7rem;
+    border-radius: 5px; background: rgba(234, 230, 219, .9); color: var(--text); font-size: .7rem;
   }
   .q-idx .eq { height: .75rem; }
 }
 
-/* ===== Tablet vertical y celular: una columna + barra inferior ===== */
 @media (max-width: 899px), (orientation: landscape) and (max-height: 520px) {
   :root { --side-w: 100%; }
   .top {
@@ -417,19 +415,16 @@ body[data-role="player"] .q-thumb, body[data-role="player"] .q-text { cursor: po
   .toast { bottom: calc(var(--nav-h) + 1rem + env(safe-area-inset-bottom)); }
   .q-btn { width: 2.6rem; height: 2.6rem; }
 
-  /* Rol Control: tarjeta compacta en una fila */
   .ct-only { flex-direction: row; align-items: center; gap: .8rem; }
   .rc-thumb { flex: none; width: 6rem; height: 3.375rem; padding-top: 0; }
   .rc-text { min-width: 0; }
   .rc-title { font-size: 1rem; -webkit-line-clamp: 1; }
 
-  /* Rol Reproductor en pantallas medianas: video a la izquierda, datos a la derecha */
   body[data-role="player"] .pl-only { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 0 1rem; align-items: start; }
   body[data-role="player"] .pl-only .stage { grid-row: 1 / span 3; }
   body[data-role="player"] .np { margin-top: 0; }
 }
 
-/* ===== Celular ===== */
 @media (max-width: 639px) {
   .brand-sub { display: none; }
   .grid { grid-template-columns: 1fr; gap: 1.1rem; }
@@ -437,12 +432,10 @@ body[data-role="player"] .q-thumb, body[data-role="player"] .q-text { cursor: po
   .song-info { padding-top: 0; }
   .song-acts { margin-top: .5rem; }
   .q-row { grid-template-columns: 1.3rem 4.2rem minmax(0, 1fr) auto; gap: .5rem; }
-  /* Reproductor en celular: video a todo el ancho (YouTube pide mínimo ~200 px) */
   body[data-role="player"] .pl-only { display: block; }
   body[data-role="player"] .np { margin-top: .7rem; }
 }
 
-/* ===== Celular horizontal (poca altura): video al lado de la lista ===== */
 @media (orientation: landscape) and (max-height: 520px) {
   .top { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "brand search right"; padding: .4rem 1rem; }
   .brand-sub { display: none; }
@@ -450,7 +443,6 @@ body[data-role="player"] .q-thumb, body[data-role="player"] .q-text { cursor: po
   .queue { grid-area: main; }
   .player-card { overflow-y: auto; border-bottom: 0; border-right: 1px solid var(--line); }
   body[data-role="player"] .pl-only { display: block; }
-  /* El video se achica según la altura disponible para que quepan los controles */
   body[data-role="player"] .stage { max-width: calc((100vh - 15.5rem) * 16 / 9); max-width: calc((100dvh - 15.5rem) * 16 / 9); margin-inline: auto; }
   body[data-role="player"] .np { margin-top: .5rem; }
   .np-title { font-size: 1rem; -webkit-line-clamp: 1; }
@@ -464,7 +456,6 @@ body[data-role="player"] .q-thumb, body[data-role="player"] .q-text { cursor: po
   :root { --nav-h: 3rem; }
 }
 
-/* ===== Pantallas de TV / muy grandes ===== */
 @media (min-width: 1700px) {
   .grid { grid-template-columns: repeat(auto-fill, minmax(14.5rem, 1fr)); }
 }
@@ -542,7 +533,6 @@ body[data-role="player"] .q-thumb, body[data-role="player"] .q-text { cursor: po
     </main>
 
     <section class="player-card" id="playerCard" aria-label="Reproductor">
-      <!-- Rol Reproductor: este dispositivo suena y administra la fila -->
       <div class="pl-only">
         <div class="stage">
           <div class="video" id="playerBox">
@@ -582,7 +572,6 @@ body[data-role="player"] .q-thumb, body[data-role="player"] .q-text { cursor: po
         </div>
       </div>
 
-      <!-- Rol Control: muestra qué suena y deja agregar canciones -->
       <div class="ct-only">
         <div class="rc-thumb"><img id="rcThumb" alt="" hidden></div>
         <div class="rc-text">
@@ -631,18 +620,12 @@ body[data-role="player"] .q-thumb, body[data-role="player"] .q-text { cursor: po
 
 <script>
 'use strict';
-/* =====================================================================
-   CATÁLOGO PREDETERMINADO (no usa la API de YouTube → no gasta cuota)
-   Cada canción: [idDeYouTube, 'Título', 'Artista']
-   Para cambiar una canción, reemplaza el ID de 11 caracteres
-   (lo que va después de "v=" en la URL del video de YouTube).
-   ===================================================================== */
+
 const CATS = [
   {
     key: 'inicio', emoji: '🌐', label: 'Inicio',
-    // Consulta original de cada género: se usa solo al tocar "Buscar más en YouTube" (gasta cuota de la API)
     q: 'Música variada para bares 2026 éxitos',
-    songs: [] // se arma abajo mezclando las demás categorías
+    songs: [] 
   },
   {
     key: 'regional', emoji: '🌵', label: 'Regional Mex',
@@ -724,14 +707,12 @@ const CATS = [
   }
 ];
 
-// Canciones extra solo para "Inicio" (pop y rock en español)
 const EXTRAS_INICIO = [
   ['kJQP7kiw5Fk', 'Despacito', 'Luis Fonsi, Daddy Yankee'],
   ['8lbsQyMhMT8', 'Rayando el Sol', 'Maná'],
   ['ie-jNqM3J4A', 'De Música Ligera', 'Soda Stereo']
 ];
 
-// Orden de "Inicio": se intercalan los géneros para que siempre se vea variado
 const INICIO_ORDEN = [
   'Cr8K88UcO0s', 'lZiaYpD9ZrI', 'YXnjy5YlDwk', 'SP3twVkwrBM', 'kJQP7kiw5Fk', '_PJvpq8uOZM',
   'bFbZNgYDd2U', 'QFs3PIZb3js', 'dW2MmuA1nI4', '8lbsQyMhMT8', 'CCF1_jI8Prk', 'pviceZ-uOzg',
@@ -744,50 +725,34 @@ const INICIO_ORDEN = [
   CATS.forEach(c => c.songs.forEach(s => { porId[s[0]] = s; }));
   EXTRAS_INICIO.forEach(s => { porId[s[0]] = s; });
   CATS[0].songs = INICIO_ORDEN.map(id => porId[id]).filter(Boolean);
-  // Normaliza a objetos { id, title, artist }
   CATS.forEach(c => { c.songs = c.songs.map(s => ({ id: s[0], title: s[1], artist: s[2] })); });
 })();
 
-
-/* =====================================================================
-   ALASKA ROCKOLA · una sola página para el reproductor y el control
-   · Control (por defecto): busca y agrega canciones a la fila. No reproduce ni borra.
-   · Reproductor: suena la fila y quita cada canción al terminar (laptop/TV del bar).
-     Se activa desde el botón de arriba a la derecha, o abriendo  index.html?modo=reproductor
-     (el dispositivo recuerda su modo). Para volver:  index.html?modo=control
-   · Catálogo (géneros y canciones de Inicio): está al principio de este bloque, busca CATS.
-     Cada canción es [idDeYouTube, 'Título', 'Artista'].
-   ===================================================================== */
-
-/* ===== Configuración ===== */
 const CFG = {
   SUPABASE_URL: 'https://zothgtvmkuranngxmumc.supabase.co',
   SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvdGhndHZta3VyYW5uZ3htdW1jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5ODYxMTksImV4cCI6MjEwODU2MjExOX0.rdxY-oNicD1y9TXkAqXpaArDhDP4i_UgLazutFNbuTQ',
   YOUTUBE_KEY: 'AIzaSyAHKvpCidYJTCFasu0XsQYvCSUwHsWA4mI',
   TABLA: 'cola_reproduccion',
   POLL_MS: 2500,
-  // Opcional: si pones un PIN, hará falta para convertir un dispositivo en Reproductor.
   ADMIN_PIN: ''
 };
 
-/* ===== Estado ===== */
 const S = {
-  role: 'control',          // 'control' (celulares) | 'player' (compu/TV del bar)
-  view: 'cat',              // 'cat' | 'search' | 'favs'
+  role: 'control',          
+  view: 'cat',              
   cat: 'inicio',
   query: '', searchTitle: '', results: [],
   tab: 'home',
-  queue: [],                // filas válidas de Supabase: { id, video_id, title }
+  queue: [],                
   favs: [], bad: new Set(),
-  meta: {},                 // id de YouTube -> canción mostrada (para resolver los clics)
-  pending: new Set(),       // ids que se están agregando
-  opt: new Map(),           // id -> expira (se muestra "En fila" sin esperar al sondeo)
-  removed: new Map(),       // filas quitadas aquí (evita que reaparezcan por una respuesta vieja)
-  delRetry: new Set(),      // filas cuyo borrado falló y se reintenta
+  meta: {},                 
+  pending: new Set(),       
+  opt: new Map(),           
+  removed: new Map(),       
+  delRetry: new Set(),      
   currentId: null, yt: null, ytReady: false, online: true
 };
 
-/* ===== Utilidades ===== */
 const $ = (s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
 const ID_RE = /^[\w-]{11}$/;
@@ -800,7 +765,7 @@ const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ
 
 const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
-  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* modo privado */ } }
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
 };
 
 let toastT;
@@ -810,14 +775,12 @@ function toast(msg, err) {
   clearTimeout(toastT); toastT = setTimeout(() => { el.className = 'toast'; }, 2600);
 }
 
-/* ===== Favoritos (compatibles con las páginas anteriores: guardan id y video_id) ===== */
 function loadFavs() {
   const raw = store.get('alaska_favs', []), out = [], seen = new Set();
   (Array.isArray(raw) ? raw : []).forEach(f => {
     const id = f && (f.video_id || f.id);
     if (!id || !ID_RE.test(id) || seen.has(id)) return;
     seen.add(id);
-    // "title" guarda el texto completo (compatible con las páginas viejas); "name" el título limpio
     const full = decodeHTML(f.title).slice(0, 200);
     out.push({ id, title: decodeHTML(f.name || f.title).slice(0, 200), artist: decodeHTML(f.artist || ''), dbTitle: full });
   });
@@ -829,7 +792,6 @@ function saveFavs() {
 const isFav = id => S.favs.some(f => f.id === id);
 const queueHas = id => S.queue.some(r => r.video_id === id) || (S.opt.get(id) || 0) > Date.now();
 
-/* ===== Base de datos (Supabase, solo REST: igual que antes) ===== */
 const SB_URL = () => CFG.SUPABASE_URL + '/rest/v1/' + CFG.TABLA;
 const sbHeaders = extra => Object.assign({ apikey: CFG.SUPABASE_KEY, Authorization: 'Bearer ' + CFG.SUPABASE_KEY }, extra || {});
 
@@ -856,7 +818,6 @@ async function dbDelete(rowId) {
   if (!r.ok) throw new Error('HTTP ' + r.status);
 }
 
-/* ===== Catálogo y vistas ===== */
 const catByKey = k => CATS.find(c => c.key === k) || CATS[0];
 function allCatalog() {
   const seen = new Set(), out = [];
@@ -871,7 +832,6 @@ function renderChips() {
   ).join('') +
     '<button type="button" class="chip chip-fav" data-cat="favs" aria-current="' + cur('favs') + '">' +
     '<svg class="i i-sm" style="color:var(--amber)" aria-hidden="true"><use href="#i-star"/></svg>Favoritos</button>';
-  // La opción elegida siempre queda a la vista y se indica si hay más chips a los lados
   const box = $('#chips'), on = $('.chip[aria-current="true"]', box);
   if (on) {
     if (on.offsetLeft < box.scrollLeft) box.scrollLeft = on.offsetLeft - 16;
@@ -949,7 +909,6 @@ function showNotice(msg, kind) {
   const n = $('#notice'); n.textContent = msg; n.className = 'notice' + (kind === 'err' ? ' err' : ''); n.hidden = !msg;
 }
 
-/* Actualiza botones sin volver a dibujar la rejilla (no pierde el scroll) */
 function refreshStates() {
   $$('#grid .song[data-vid]').forEach(el => {
     const id = el.dataset.vid, b = $('[data-act="add"]', el), f = $('[data-act="fav"]', el);
@@ -964,7 +923,6 @@ function refreshStates() {
   });
 }
 
-/* ===== Fila de música ===== */
 let lastQSig = '';
 function renderQueue(force) {
   const sig = S.role + '|' + S.currentId + '|' + S.queue.map(r => r.id + (isFav(r.video_id) ? '*' : '')).join(',');
@@ -998,7 +956,6 @@ function renderQueue(force) {
   list.scrollTop = top;
 }
 
-/* Tarjeta "Sonando ahora" del modo Control (la primera de la fila) */
 function renderRemoteCard() {
   const r = S.queue[0], img = $('#rcThumb');
   if (!r) {
@@ -1019,7 +976,6 @@ function updateTitle() {
   document.title = r ? '▶ ' + r.title + ' — Alaska Rockola' : 'Alaska Rockola';
 }
 
-/* ===== Favoritos ===== */
 function toggleFav(id, fallback) {
   const i = S.favs.findIndex(f => f.id === id);
   if (i >= 0) { S.favs.splice(i, 1); toast('Quitada de favoritos'); }
@@ -1033,7 +989,6 @@ function toggleFav(id, fallback) {
   if (S.view === 'favs') { renderView(); renderChips(); }
 }
 
-/* ===== Estado de red y ventana de modo ===== */
 function setOnline(ok) {
   S.online = ok;
   $('#netStatus').classList.toggle('off', !ok);
@@ -1047,14 +1002,12 @@ let sheetOpener = null;
 function openSheet() { sheetOpener = document.activeElement; syncOpts(); $('#verifyOut').hidden = true; $('#sheet').hidden = false; $('#sheetClose').focus(); }
 function closeSheet() {
   $('#sheet').hidden = true;
-  try { if (sheetOpener && sheetOpener.focus) sheetOpener.focus(); } catch (e) { /* ignorar */ }
+  try { if (sheetOpener && sheetOpener.focus) sheetOpener.focus(); } catch (e) { }
   sheetOpener = null;
 }
 
-/* Las miniaturas que no cargan se ocultan y dejan el fondo de color */
 document.addEventListener('error', e => { const t = e.target; if (t && t.tagName === 'IMG') t.classList.add('broken'); }, true);
 
-/* ===== Reproductor de YouTube (solo se carga en modo Reproductor) ===== */
 let gateT = null, wakeLock = null, seeking = false;
 
 const paintRange = el => el.style.setProperty('--p', ((el.value - el.min) / (el.max - el.min) * 100) + '%');
@@ -1084,16 +1037,19 @@ function createPlayer() {
 
 function destroyPlayer() {
   clearTimeout(gateT); setPlaying(false);
-  try { if (S.yt && S.yt.destroy) S.yt.destroy(); } catch (e) { /* ya no existe */ }
+  try { if (S.yt && S.yt.destroy) S.yt.destroy(); } catch (e) { }
   S.yt = null; S.ytReady = false; S.currentId = null;
-  if (!$('#player')) { const d = document.createElement('div'); d.id = 'player'; const box = $('#playerBox'); box.insertBefore(d, box.firstChild); }
+  const box = $('#playerBox');
+  const iframe = box.querySelector('iframe');
+  if (iframe) iframe.remove();
+  if (!$('#player')) { const d = document.createElement('div'); d.id = 'player'; box.insertBefore(d, box.firstChild); }
   $('#gate').hidden = true; $('#idle').hidden = false;
 }
 
 function onYTReady() {
   S.ytReady = true;
   const v = store.get('alaska_vol', 100);
-  try { S.yt.setVolume(v); } catch (e) { /* ignorar */ }
+  try { S.yt.setVolume(v); } catch (e) { }
   const vol = $('#vol'); vol.value = v; paintRange(vol);
   $('#volIcon').setAttribute('href', v === 0 ? '#i-mute' : '#i-vol');
   syncPlayer();
@@ -1108,7 +1064,6 @@ function onYTState(e) {
 
 function onYTError(e) {
   const cur = S.currentId, row = S.queue.find(r => r.id === cur);
-  // 100 = no existe, 101/150 = el dueño no permite reproducirlo fuera de YouTube
   if (row && [100, 101, 150].indexOf(e.data) >= 0) {
     S.bad.add(row.video_id); store.set('alaska_bad', Array.from(S.bad));
     if (S.view === 'cat') renderView();
@@ -1123,31 +1078,33 @@ function setPlaying(on) {
   $('#btnPlay').setAttribute('aria-label', on ? 'Pausar' : 'Reproducir');
 }
 
-/* ===== Qué suena ===== */
 function playFirstOrIdle() {
   const row = S.queue[0];
   if (row) playRow(row); else goIdle();
 }
 function goIdle() {
   S.currentId = null; clearTimeout(gateT);
-  try { S.yt.stopVideo(); } catch (e) { /* ignorar */ }
+  try { S.yt.stopVideo(); } catch (e) { }
   $('#idle').hidden = false; $('#gate').hidden = true; setPlaying(false);
   resetProgress(); updateNow(); renderQueue(); updateTitle();
 }
 function playRow(row) {
   S.currentId = row.id;
   $('#idle').hidden = true; $('#gate').hidden = true;
-  try { S.yt.loadVideoById(row.video_id); } catch (e) { /* ignorar */ }
+  try { S.yt.loadVideoById(row.video_id); } catch (e) { }
   resetProgress(); armGate(); updateNow(); renderQueue(); updateTitle();
 }
-/* Si el navegador bloquea el sonido automático, pide un toque para activarlo */
 function armGate() {
   clearTimeout(gateT);
   gateT = setTimeout(() => {
     if (S.role !== 'player' || !S.yt || !S.currentId) return;
-    const st = S.yt.getPlayerState(), P = YT.PlayerState;
-    if (st !== P.PLAYING && st !== P.BUFFERING) $('#gate').hidden = false;
-  }, 3500);
+    try {
+        const st = S.yt.getPlayerState(), P = YT.PlayerState;
+        if (st !== P.PLAYING && st !== P.BUFFERING) $('#gate').hidden = false;
+    } catch(e) {
+        $('#gate').hidden = false;
+    }
+  }, 2500);
 }
 function resetProgress() {
   $('#curTime').textContent = '0:00'; $('#totTime').textContent = '0:00';
@@ -1165,7 +1122,6 @@ function updateNow() {
   $('#npSub').textContent = next ? 'Sigue: ' + next.title : 'Es la última de la fila';
 }
 
-/* Mantiene el reproductor al día con la fila (otro dispositivo puede cambiarla) */
 function syncPlayer() {
   if (S.role !== 'player' || !S.ytReady) return;
   const cur = S.currentId;
@@ -1174,7 +1130,6 @@ function syncPlayer() {
   else updateNow();
 }
 
-/* Quita la fila de la lista local y de Supabase (reintenta si falla) */
 function dropRow(rowId) {
   rowId = String(rowId);
   S.removed.set(rowId, Date.now());
@@ -1195,8 +1150,9 @@ function skipSong() {
 }
 function playNow(rowId) {
   const row = S.queue.find(r => r.id === rowId);
-  if (!row || !S.ytReady || rowId === S.currentId) return;          // tocar la que ya suena no la reinicia
-  if (S.currentId) dropRow(S.currentId);                            // igual que antes: la que sonaba se descarta
+  if (!row || rowId === S.currentId) return;
+  if (!S.ytReady) { toast('Preparando el reproductor, intenta de nuevo...'); return; }
+  if (S.currentId) dropRow(S.currentId);
   playRow(row); afterQueue(false);
 }
 function removeFromQueue(rowId) {
@@ -1204,7 +1160,6 @@ function removeFromQueue(rowId) {
   dropRow(rowId); afterQueue(false); updateNow(); toast('Quitada de la fila');
 }
 
-/* ===== Controles ===== */
 function togglePlay() {
   if (!S.ytReady) return;
   if (!S.currentId) { toast('Agrega canciones a la fila'); return; }
@@ -1233,7 +1188,6 @@ function toggleFull() {
   catch (e) { toast('La pantalla completa no está disponible aquí', true); }
 }
 
-/* Progreso: se actualiza dos veces por segundo, sin pelear con el dedo mientras se arrastra */
 setInterval(() => {
   if (S.role !== 'player' || !S.ytReady || !S.currentId || seeking) return;
   let cur = 0, tot = 0, st;
@@ -1243,14 +1197,13 @@ setInterval(() => {
   const sk = $('#seek'); sk.value = Math.round(cur / tot * 1000); paintRange(sk);
 }, 500);
 
-/* La pantalla del bar no debe apagarse */
 async function keepAwake() {
   try {
     if (S.role === 'player' && 'wakeLock' in navigator && !wakeLock) {
       wakeLock = await navigator.wakeLock.request('screen');
       wakeLock.addEventListener('release', () => { wakeLock = null; });
     }
-  } catch (e) { /* no disponible */ }
+  } catch (e) { }
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden) keepAwake(); });
 
@@ -1260,14 +1213,12 @@ function stopPlayerMode() {
   if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
 }
 
-/* ===== Cambios en la fila ===== */
 function afterQueue(sync) {
   renderQueue(); refreshStates(); renderRemoteCard(); updateTitle();
   if (S.role === 'control') document.body.classList.toggle('playing', S.queue.length > 0);
   if (sync !== false) syncPlayer();
 }
 
-/* ===== Sondeo de Supabase (cada pocos segundos, sin solaparse) ===== */
 let pollT = null, pollBusy = false, pollAgain = false, fails = 0, lastSig = null;
 const schedulePoll = () => { clearTimeout(pollT); pollT = setTimeout(poll, CFG.POLL_MS); };
 function pollNow() { if (pollBusy) { pollAgain = true; return; } clearTimeout(pollT); poll(); }
@@ -1276,7 +1227,7 @@ async function poll() {
   if (pollBusy) return;
   pollBusy = true;
   try {
-    for (const id of Array.from(S.delRetry)) { try { await dbDelete(id); S.delRetry.delete(id); } catch (e) { /* se reintenta luego */ } }
+    for (const id of Array.from(S.delRetry)) { try { await dbDelete(id); S.delRetry.delete(id); } catch (e) { } }
     const rows = await dbList();
     fails = 0; setOnline(true);
     applyRows(rows);
@@ -1306,7 +1257,6 @@ function applyRows(rows) {
   else if (S.role === 'player') syncPlayer();
 }
 
-/* ===== Agregar canciones ===== */
 async function addSong(id) {
   const s = S.meta[id];
   if (!s || S.pending.has(id)) return;
@@ -1324,10 +1274,9 @@ async function addSong(id) {
   }
 }
 
-/* ===== Búsqueda en YouTube (con respaldo en el catálogo) ===== */
 function localSearch(q) {
   const toks = norm(q).split(/\s+/).filter(Boolean), tag = {};
-  CATS.forEach(c => { if (c.tags) c.songs.forEach(s => { tag[s.id] = norm(c.label + ' ' + c.tags); }); });   // también se busca por género
+  CATS.forEach(c => { if (c.tags) c.songs.forEach(s => { tag[s.id] = norm(c.label + ' ' + c.tags); }); });
   return allCatalog().filter(s => {
     if (S.bad.has(s.id)) return false;
     const hay = norm(s.title + ' ' + s.artist) + ' ' + (tag[s.id] || '');
@@ -1362,17 +1311,21 @@ async function runSearch(q, title) {
       'No se pudo buscar en YouTube. Mostrando coincidencias del catálogo.';
     kind = 'err';
   }
-  if (S.view !== 'search' || S.query !== q) return;   // la persona se fue a otra vista
+  if (S.view !== 'search' || S.query !== q) return;
   S.loading = false; renderView(); showNotice(notice, kind);
 }
 
-/* ===== Modo del dispositivo ===== */
 function setRole(role, persist) {
   S.role = role; document.body.dataset.role = role;
   $('#roleText').textContent = role === 'player' ? 'Reproductor' : 'Control';
   $('#roleIcon').setAttribute('href', role === 'player' ? '#i-tv' : '#i-phone');
   if (persist) store.set('alaska_role', role);
-  if (role === 'player') startPlayerMode(); else stopPlayerMode();
+
+  // ARREGLO: Pequeña pausa para asegurar que el navegador dibuja el cambio a "display: block"
+  // antes de inicializar el API de YouTube (evita el congelamiento silencioso del iframe).
+  if (role === 'player') setTimeout(startPlayerMode, 100); 
+  else stopPlayerMode();
+  
   document.body.classList.toggle('playing', false);
   syncOpts(); renderQueue(true); renderRemoteCard(); updateTitle();
   if (role === 'control') document.body.classList.toggle('playing', S.queue.length > 0);
@@ -1383,7 +1336,6 @@ function requestRole(role) {
   setRole(role, true); closeSheet();
 }
 
-/* Revisa en este navegador cuáles canciones del catálogo no se pueden reproducir y las oculta */
 async function verifyCatalog() {
   const out = $('#verifyOut'), btn = $('#btnVerify');
   out.hidden = false; btn.disabled = true; out.textContent = 'Revisando…';
@@ -1401,7 +1353,7 @@ async function verifyCatalog() {
   };
   await Promise.all([worker(), worker(), worker(), worker()]);
   btn.disabled = false;
-  if (unknown.length === songs.length) {   // sin respuesta de YouTube: no se toca lo que ya estaba oculto
+  if (unknown.length === songs.length) {
     out.textContent = 'No se pudo revisar desde este navegador. Verifica la conexión e inténtalo de nuevo.';
     return;
   }
@@ -1417,7 +1369,6 @@ async function verifyCatalog() {
   if (S.view === 'cat') renderView();
 }
 
-/* ===== Eventos ===== */
 function toggleClear() { $('#searchClear').hidden = !$('#searchInput').value; }
 function goHome() { $('#searchInput').value = ''; toggleClear(); setTab('home'); setView('cat', 'inicio'); }
 
@@ -1458,7 +1409,6 @@ function bind() {
   });
   $('#viewBack').addEventListener('click', () => { input.value = ''; toggleClear(); setView('cat'); });
 
-  // Modo del dispositivo
   $('#roleBtn').addEventListener('click', openSheet);
   $('#rcSwitch').addEventListener('click', openSheet);
   $('#sheetClose').addEventListener('click', closeSheet);
@@ -1467,7 +1417,6 @@ function bind() {
   $('#optPlayer').addEventListener('click', () => requestRole('player'));
   $('#btnVerify').addEventListener('click', verifyCatalog);
 
-  // Reproductor
   $('#btnPlay').addEventListener('click', togglePlay);
   $('#btnBack').addEventListener('click', () => seekBy(-10));
   $('#btnFwd').addEventListener('click', () => seekBy(10));
@@ -1476,7 +1425,7 @@ function bind() {
   $('#btnFull').addEventListener('click', toggleFull);
   $('#shield').addEventListener('click', togglePlay);
   $('#shield').addEventListener('dblclick', toggleFull);
-  $('#gateBtn').addEventListener('click', () => { try { S.yt.playVideo(); } catch (e) { /* ignorar */ } $('#gate').hidden = true; });
+  $('#gateBtn').addEventListener('click', () => { try { S.yt.playVideo(); } catch (e) { } $('#gate').hidden = true; });
   const vol = $('#vol'); vol.addEventListener('input', () => setVol(vol.value)); paintRange(vol);
   const sk = $('#seek'); paintRange(sk);
   sk.addEventListener('input', () => {
@@ -1492,7 +1441,7 @@ function bind() {
   document.addEventListener('keydown', e => {
     const t = e.target, typing = t && ((t.tagName === 'INPUT' && t.type !== 'range') || t.tagName === 'TEXTAREA');
     if (e.key === 'Escape') { if (!$('#sheet').hidden) closeSheet(); return; }
-    if (e.key === 'Tab' && !$('#sheet').hidden) {   // el foco se queda dentro de la ventana mientras está abierta
+    if (e.key === 'Tab' && !$('#sheet').hidden) {
       const f = $$('#sheet button:not([disabled])'), first = f[0], last = f[f.length - 1], act = document.activeElement;
       if (!$('#sheet').contains(act) || (e.shiftKey && act === first)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
       else if (!e.shiftKey && act === last) { e.preventDefault(); first.focus(); }
@@ -1512,7 +1461,6 @@ function bind() {
   window.addEventListener('offline', () => setOnline(false));
 }
 
-/* ===== Arranque ===== */
 (function init() {
   S.favs = loadFavs();
   S.bad = new Set((store.get('alaska_bad', []) || []).filter(id => ID_RE.test(id)));
@@ -1520,10 +1468,10 @@ function bind() {
   renderChips(); renderView(); renderQueue(true); renderRemoteCard();
 
   let role = store.get('alaska_role', 'control') === 'player' ? 'player' : 'control';
-  const want = new URLSearchParams(location.search).get('modo');   // ej. index.html?modo=reproductor
+  const want = new URLSearchParams(location.search).get('modo');
   if (want) {
     const w = /^(reproductor|tv|player)$/i.test(want) ? 'player' : 'control';
-    if (w === 'player' && role !== 'player' && CFG.ADMIN_PIN && window.prompt('PIN de administrador') !== CFG.ADMIN_PIN) { /* se queda como está */ }
+    if (w === 'player' && role !== 'player' && CFG.ADMIN_PIN && window.prompt('PIN de administrador') !== CFG.ADMIN_PIN) { }
     else role = w;
   }
   setRole(role, true);
